@@ -1,0 +1,119 @@
+<!doctype html>
+<html>
+<head>
+  <title>Arogi Traveling Salesman</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+  <link rel="stylesheet" href="leaflet/leaflet.css" />
+  <link rel="stylesheet" href="arogi_dark.css" />
+  <script src="leaflet/leaflet.js"></script>
+  <script src="https://mapzen.com/tangram/0.6/tangram.min.js"></script>
+  <script src="ajax_functions.js"></script>
+  <!-- // this loads a geojson of starting points.
+  // the variable is called defaultMarkers -->
+  <script src="data/tsp_data_SB14.js"></script>
+
+
+  <style>
+
+  body {
+    padding: 0;
+    margin: 0;
+  }
+
+  #map {
+    height: 100%;
+    width: 100%;
+    padding:0px;
+    margin:0px;
+    position: absolute;
+  }
+
+  </style>
+</head>
+
+<body>
+  <div id = "test_area">
+    test area
+  </div>
+  <div id="map"></div>
+
+  <script>
+
+  $(document).ready(function() {
+
+    circleArray = new Array();
+    redDots = new Array();
+    simpleCount = 0;
+    var pointMarkers;
+    problemState = 0;
+
+
+
+
+
+    var useTheseMarkers = JSON.stringify(answeredGeoJson);
+
+    $.ajax({
+      type: 'POST',
+      url: "interface/tsp_interface.py",  // deliver the data to this script... it will answer back with a solution
+      data: {useTheseMarkers:useTheseMarkers},
+      success: function(answerText)
+      {
+        // overwrites and displays existing answeredGeoJson...
+        // with the response GeoJSON from the server
+        //answeredGeoJson = JSON.parse(answerText);
+
+        if (pointMarkers != undefined) {
+                map.removeLayer(pointMarkers);
+        }
+        document.getElementById('test_area').innerHTML = answerText;
+        //document.getElementById('test_area').innerHTML =  ((answeredGeoJson.properties.efficacyPercentage)*100).toFixed(1) + "%";
+      },
+      error: function()
+      {
+        //// fail
+      }
+
+    });
+
+
+
+
+
+
+
+
+
+  });
+
+  // add basemap tiles from Mapzen's Tangram
+  var map = L.map('map', {zoomControl: false});
+  var layer = Tangram.leafletLayer({
+    scene: 'grayprint.yaml',
+    attribution: '<a href="arogi.com">Arogi</a> | &copy; <a href="http://osm.org">OpenSteetMap</a> | <a href="https://mapzen.com/tangram" target="_blank">Mapzen</a>'
+  });
+  layer.addTo(map);
+
+  L.control.scale().setPosition('bottomright').addTo(map);
+  new L.Control.Zoom({ position: 'bottomright' }).addTo(map);
+
+
+  // this gets called on document.ready since the map needs a bounding area and
+  // the initial ajax call might take a long time.
+  //defaultMarkers is called from the data.js script.
+  answeredGeoJson = defaultMarkers;
+  var pointMarkers = L.geoJson(answeredGeoJson, {
+    pointToLayer: function (feature, latlng) {
+      return L.marker(latlng);
+    }
+  });
+  // but the points do not need to be shown
+  pointMarkers.addTo(map);
+
+  map.fitBounds(pointMarkers, {padding:[140,140]});
+
+  </script>
+
+</body>
+
+</html>
