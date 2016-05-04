@@ -23,10 +23,9 @@ def main(nodes):
         routing = pywrapcp.RoutingModel(nodes, 1)
         search_parameters = pywrapcp.RoutingModel.DefaultSearchParameters()
         # Setting first solution heuristic (cheapest addition).
-        search_parameters.first_solution_strategy = (
-        routing_enums_pb2.FirstSolutionStrategy.PATH_CHEAPEST_ARC)
+        search_parameters.first_solution_strategy = (routing_enums_pb2.FirstSolutionStrategy.PATH_CHEAPEST_ARC)
         routing.SetArcCostEvaluatorOfAllVehicles(Distance)
-
+        print pywrapcp.Solver
         assignment = routing.Solve()
         if assignment:
             # Solution cost.

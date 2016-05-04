@@ -25,58 +25,23 @@ import GISOps
 import time
 import numpy as np
 from scipy.spatial.distance import cdist
-from ortools.linear_solver import pywraplp
+from ortools.constraint_solver import pywrapcp
+from ortools.constraint_solver import routing_enums_pb2
 from bisect import bisect
-
 
 printModel = False
 
-
-def RunPMedianBEAMR(optimization_problem_type, p):
-
-    #p-median program using BEAMR
-    solver = pywraplp.Solver('RunIntegerExampleCppStyleAPI', optimization_problem_type)
-
-    #h_i_init = int(numFacilities /(p+1))
-    h_i_init = 50
-    print "h-i-init = %d" % h_i_init
-
-    # 1 if demand i is served by facility j
-    X = [[0 for j in range(numFacilities)] for i in range(numDemands)]
-    # 1 if facility at site j is located
-    Y = [0]*numFacilities
-    # 1 if demand i is assigned to facility outside of h_i neighborhood
-    F = [0]*numDemands
-    # The set of |h_i| for each demand i
-    H = [h_i_init]*numDemands
-
+def RunTSP(nodes):
+    #TSP using Google OR-Tools Constraint Programming model example
     start_time = time.time()
-    solverIterations = 1
 
-    PreComputeDistances()
+    PreComputeDistances() #compute the distances between points
     #DEBUG: quick print of dist matrix
     #print d
-    """
-    BuildModel(solver, p, X, Y, F, H, solverIterations, objLB)
-    start = time.time()
-    SolveModel(solver)
-    print time.time()-start
-    optimal = CheckOutput(solver, X, Y, F, H, p)
 
-
-    while optimal == False:
-        objLB = solver.Objective().Value()
-        solver.Clear()
-        solverIterations += 1
-        BuildModel(solver, p, X, Y, F, H, solverIterations, objLB)
-        start = time.time()
-        SolveModel(solver)
-        print time.time()-start
-        optimal = CheckOutput(solver, X, Y, F, H, p)
+    SolveModel(start_time)
 
     total_time = time.time()-start_time
-    displaySolution(solver, Y, F, H, p, solverIterations, total_time)
-"""
 
 def PreComputeDistances():
 
@@ -84,143 +49,58 @@ def PreComputeDistances():
     global dSort
     global d
 
-    A = [demandArray[i][0:2] for i in range(numDemands)]
-    B = [facilityArray[j][0:2] for j in range(numFacilities)]
+    A = xyPointArray
+    B = xyPointArray
 
     d = cdist(A, B,'euclidean')
     dSort = np.argsort(d, axis=1)
+    #print d
 
+def Distance(i,j):
+    return d[i][j]
 
-"""
-def BuildModel(solver, p, X, Y, F, H, solverIterations, objLB):
-
-    infinity = solver.infinity()
-
-    #declare a couple variables
-    global FIDindex
-    global LIDindex
-    name = ''
-
-    # DECLARE CONSTRAINTS
-    # declare facility location constraints
-    c1 = [None]*numDemands
-    # declare allocation constraints
-    c2 = [None]*(numDemands*numFacilities)
-    # explicitly declare and initialize the p-facility constraint
-    c3 = solver.Constraint(p,p)  # equality constraint equal to p
-
-    # declare the objective
-    objective = solver.Objective()
-    objective.SetMinimization()
-
-    # Generate the objective function and constraints
-    for j in range(numFacilities):
-        # initialize the Y site location variables
-        name = "Y,%d" % (j+1)
-        Y[j] = solver.BoolVar(name)
-        # set coefficients of the Y variables in constraint 3
-        c3.SetCoefficient(Y[j], 1)
-
-    for i in range(numDemands):
-
-        # initialize c1 equality constraints = 1
-        c1[i] = solver.Constraint(1, 1)
-        name = "F,%d" % (i+1)
-        F[i] = solver.BoolVar(name)
-
-        # if H(i) is less than the number of facilities,
-        #   - add f(i) to the objective function
-        #   - add f(i) to the assignment constraint (c1)
-        if (H[i] < numFacilities):
-            objective.SetCoefficient(F[i], demandArray[i][2]*d[i,dSort[i,H[i]]])
-            c1[i].SetCoefficient(F[i], 1)
-
-        #for j in range(numFacilities):
-        for k in range(H[i]):
-            # facility j is the kth closest facility from i, zero indexed
-            j = dSort[i,k]
-            # initialize the X assignment variables and add them to the objective function
-            name = 'X,%d,%d' % (i+1,j+1)
-            X[i][k] = solver.BoolVar(name)
-            objective.SetCoefficient(X[i][k], demandArray[i][2]*d[i,j])
-
-            # set the variable coefficients of the sum(Xij) = 1 for each i
-            c1[i].SetCoefficient(X[i][k], 1)
-
-            # Yj - Xij >= 0 <--- canonical form of the assignment constraint
-            c2[i*numFacilities+k] = solver.Constraint(0, infinity) # c2 rhs
-            c2[i*numFacilities+k].SetCoefficient(X[i][k], -1)
-            c2[i*numFacilities+k].SetCoefficient(Y[j], 1)
-
-    # add a lower bound objective constraint
-    if (solverIterations > 1):
-        c4 = solver.Constraint(objLB,infinity)
-        for i in range(numDemands):
-            if (H[i] < numFacilities):
-                c4.SetCoefficient(F[i], demandArray[i][2]*d[i,dSort[i,H[i]]])
-            for k in range(H[i]):
-                c4.SetCoefficient(X[i][k], demandArray[i][2]*d[i,j])
-"""
-
-def SolveModel(solver):
+def SolveModel(start_time):
   """Solve the problem and print the solution."""
-  result_status = solver.Solve()
-
-  # The problem has an optimal solution.
-  assert result_status == pywraplp.Solver.OPTIMAL, "The problem does not have an optimal solution!"
-
-  # The solution looks legit (when using solvers others than
-  # GLOP_LINEAR_PROGRAMMING, verifying the solution is highly recommended!).
-  assert solver.VerifySolution(1e-7, True)
-
-"""
-def CheckOutput(solver, X, Y, F, H, p):
-
-  optimal = True
-  H_old = H[:]
-
-  # The set of selected facilities
-  FIDindex = [None]*p
-  LIDindex = [None]*p
-
-  #print 'Problem solved in %f milliseconds' % solver.WallTime()
+  if nodes > 0:
+      # TSP of size args.tsp_size
+      # Second argument = 1 to build a single tour (it's a TSP).
+      # Nodes are indexed from 0 to parser_tsp_size - 1, by default the start of
+      # the route is node 0.
+      routing = pywrapcp.RoutingModel(nodes, 1)
+      search_parameters = pywrapcp.RoutingModel.DefaultSearchParameters()
+      # Setting first solution heuristic (cheapest addition).
+      search_parameters.first_solution_strategy = (routing_enums_pb2.FirstSolutionStrategy.PATH_CHEAPEST_ARC)
+      routing.SetArcCostEvaluatorOfAllVehicles(Distance)
+      print pywrapcp.Solver
+      assignment = routing.Solve()
+      if assignment:
+          # Solution cost.
+          print(assignment.ObjectiveValue())
+          # Inspect solution.
+          # Only one route here; otherwise iterate from 0 to routing.vehicles() - 1
+          route_number = 0
+          node = 0
+          route = ''
+          while not routing.IsEnd(node):
+              route += str(node) + ' -> '
+              node = assignment.Value(routing.NextVar(node))
+          route += '0'
+          print(route)
+      else:
+          print('No solution found.')
+  else:
+      print('Specify an instance greater than 0.')
 
   # The objective value of the solution.
   #print 'Optimal objective value = %f' % solver.Objective().Value()
-
-  # print the selected sites
-  count = 0
-  iterator = 0
-  for j in facilityIDs:
-    if (Y[count].SolutionValue() == True):
-      FIDindex[iterator] = count
-      LIDindex[iterator] = j
-      iterator += 1
-      #print "Facility selected %d" % (js['features'][j]['properties']['pointID'])
-    count += 1
-
-  noFselected = True
-  for i in range(numDemands):
-    if (F[i].SolutionValue() == True):
-      # If the next closest H(i+1) facility was selected, then this is part of an optimal solution
-      # Assign the demamd to the H(i+1) closest facility
-      if facilityIDs[dSort[i,H[i]]] in LIDindex:
-          # if next nearest facility is a located solution, assign to that
-          js['features'][demandIDs[i]]['properties']['assignedTo'] = facilityIDs[dSort[i,H[i]]]
-          # increment H[i]
-          H[i] += 1
-      else:
-          optimal = False
-          # otherwise, increase H to the nearest located facility
-          H[i] = int(np.where(d[i,dSort[i,:]]==min(d[i,FIDindex[:]]))[0])+1
-          # also add this allocation to the upper bound
-    count += 1
+"""
   if (optimal == True):
       generateGEOJSON(X, Y, H_old, p)
 
   return optimal
 """
 
+"""
 def displaySolution(solver, Y, F, H, p, solverIterations, total_time):
 
     print 'Last iteration solved in %f milliseconds, with' % solver.WallTime()
@@ -241,6 +121,7 @@ def displaySolution(solver, Y, F, H, p, solverIterations, total_time):
     print
     print "Max H = %d, Ave H = %f" % (max(H),np.mean(H))
     print
+"""
 
 def generateGEOJSON(X, Y, H, p):
 
@@ -268,12 +149,6 @@ def writeToGJSFile(js, p):
   with open('./data/PMedianResult_s%d_p%d_B.json' % (numFeatures, p), 'w') as outfile:
     json.dump(js,outfile)
 
-
-def Announce(solver, api_type):
-  print ('---- Integer programming example with ' + solver + ' (' +
-         api_type + ') -----')
-
-
 #
 # Read a problem instance from a file
 #
@@ -281,18 +156,12 @@ def read_problem(file, p, readType):
   global dSort
   global d
   global numFeatures
-  global numFacilities
-  global facilityIDs
-  global facilityArray
-  global numForced
-  global numDemands
   global demandIDs
   global demandArray
   global js
   global jsonRowDictionary
-  global objLB
-  global objUB
-
+  global nodes
+  global xyPointArray
 
   if readType == 1:
     print 'Reading JSON String Object'
@@ -317,78 +186,29 @@ def read_problem(file, p, readType):
 
   xyPointArray = [[None for k in range(2)] for j in range(numFeatures)]
   xyPointArray = GISOps.GetCONUSeqDprojCoords(js) # Get the Distance Coordinates in CONUS EqD Projection
-
-  facilityIDs = []
-  demandIDs = []
-
+  #print xyPointArray
+  #facilityIDs = []
+  #demandIDs = []
+  nodeID = []
   # rowID holds the index of each feature in the JSON object
   rowID = 0
 
-  # typeFD = Field Codes Represent:
-  #  1 = demand only
-  #  2 = potential facility only
-  #  3 = both demand and potential facility
   for element in js['features']:
-
-      if element['properties']['typeFD']==3: # Both Facility/Demand
-          facilityIDs.append(rowID)
-          demandIDs.append(rowID)
-      elif element['properties']['typeFD']==2: # Facility Site Only
-          facilityIDs.append(rowID)
-      elif element['properties']['typeFD']==1: # Demand Point Only
-          demandIDs.append(rowID)
+      if element['properties']['pointID'] != None: #Parse through node ID's
+          nodeID.append(rowID)
       rowID += 1
-
-  numFacilities = len(facilityIDs)
-  numDemands = len(demandIDs)
-
-  print("Number of Sites: {0}".format(numFacilities))
-  print('Number of Demands: {0}'.format(numDemands))
-  print('p = {0}'.format(p))
-
-  facilityArray = [[None for k in range(3)] for j in range(numFacilities)]
-  demandArray = [[None for k in range(3)] for j in range(numDemands)]
-
-  i = 0
-  j = 0
-  k = 0
-  for line in js['features']:
-    if line['properties']['typeFD']>=2:
-      facilityArray[i][0] = xyPointArray[k][0]
-      facilityArray[i][1] = xyPointArray[k][1]
-      facilityArray[i][2] = line['properties']['forcedLocation']
-      i += 1
-    if line['properties']['typeFD'] % 2 == 1:
-      demandArray[j][0] = xyPointArray[k][0]
-      demandArray[j][1] = xyPointArray[k][1]
-      demandArray[j][2] = line['properties']['pop']
-      j += 1
-    k += 1
-
-  numForced = sum(zip(*facilityArray)[2])
-  # check if valid for the given p
-  try:
-    if numForced > p:
-      raise DataError('numForcedGreaterThanP')
-  except DataError:
-    print 'number of forced facilities is greater than p'
-    raise
-
-  return p
-
+  nodes = len(nodeID)
+  print("Number of Nodes: {0}".format(nodes))
 
 def readJSONstrObjANDsolve(jsonStrObj,p):
   readType = 1
-
   p = read_problem(jsonStrObj, p, readType)
   #main(p)
   return js
 
 def main(p):
   print "Setting up and solving problem!"
-  if hasattr(pywraplp.Solver, 'CBC_MIXED_INTEGER_PROGRAMMING'):
-    Announce('CBC', 'C++ style API')
-    RunPMedianBEAMR(pywraplp.Solver.CBC_MIXED_INTEGER_PROGRAMMING, p)
+  RunTSP(nodes)
   if js != None:
     return js
   else:
