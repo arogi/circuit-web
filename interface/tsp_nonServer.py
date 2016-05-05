@@ -34,14 +34,13 @@ printModel = False
 def RunTSP(nodes):
     #TSP using Google OR-Tools Constraint Programming model example
     start_time = time.time()
-
     PreComputeDistances() #compute the distances between points
     #DEBUG: quick print of dist matrix
     #print d
-
     SolveModel(start_time)
 
     total_time = time.time()-start_time
+    print "The total solution time is: " + str(total_time)
 
 def PreComputeDistances():
 
@@ -71,11 +70,10 @@ def SolveModel(start_time):
       # Setting first solution heuristic (cheapest addition).
       search_parameters.first_solution_strategy = (routing_enums_pb2.FirstSolutionStrategy.PATH_CHEAPEST_ARC)
       routing.SetArcCostEvaluatorOfAllVehicles(Distance)
-      print pywrapcp.Solver
       assignment = routing.Solve()
       if assignment:
           # Solution cost.
-          print(assignment.ObjectiveValue())
+          print "TSP Objective for " + str(nodes) + " nodes is: " + str(assignment.ObjectiveValue())
           # Inspect solution.
           # Only one route here; otherwise iterate from 0 to routing.vehicles() - 1
           route_number = 0
@@ -91,36 +89,6 @@ def SolveModel(start_time):
   else:
       print('Specify an instance greater than 0.')
 
-  # The objective value of the solution.
-  #print 'Optimal objective value = %f' % solver.Objective().Value()
-"""
-  if (optimal == True):
-      generateGEOJSON(X, Y, H_old, p)
-
-  return optimal
-"""
-
-"""
-def displaySolution(solver, Y, F, H, p, solverIterations, total_time):
-
-    print 'Last iteration solved in %f milliseconds, with' % solver.WallTime()
-    print 'Number of variables = %d' % solver.NumVariables()
-    print 'Number of constraints = %d' % solver.NumConstraints()
-    print
-    print 'Total problem solved in %f seconds over %d iterations' % (total_time, solverIterations)
-    print
-    # The objective value of the solution.
-    print 'Optimal objective value = %f' % solver.Objective().Value()
-
-    # Print out the facilities that are located
-    count = 0
-    for j in facilityIDs:
-      if (Y[count].SolutionValue() == True):
-        print "Facility selected %d" % (js['features'][j]['properties']['pointID'])
-      count += 1
-    print
-    print "Max H = %d, Ave H = %f" % (max(H),np.mean(H))
-    print
 """
 
 def generateGEOJSON(X, Y, H, p):
@@ -148,7 +116,7 @@ def writeToGJSFile(js, p):
 
   with open('./data/PMedianResult_s%d_p%d_B.json' % (numFeatures, p), 'w') as outfile:
     json.dump(js,outfile)
-
+"""
 #
 # Read a problem instance from a file
 #
