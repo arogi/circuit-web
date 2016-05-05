@@ -2,12 +2,15 @@
 
 import cgi, cgitb
 import json
+import warnings
 #import GISOps
-import numpy as np
-from scipy.spatial.distance import cdist
+#import numpy as np
+#from scipy.spatial.distance import cdist
 from ortools.constraint_solver import pywrapcp
 from ortools.constraint_solver import routing_enums_pb2
 import argparse
+
+warnings.filterwarnings("ignore")
 
 
 def Distance(i,j):
@@ -23,9 +26,10 @@ def main(nodes):
         routing = pywrapcp.RoutingModel(nodes, 1)
         search_parameters = pywrapcp.RoutingModel.DefaultSearchParameters()
         # Setting first solution heuristic (cheapest addition).
-        search_parameters.first_solution_strategy = (routing_enums_pb2.FirstSolutionStrategy.PATH_CHEAPEST_ARC)
+        search_parameters.first_solution_strategy = (
+        routing_enums_pb2.FirstSolutionStrategy.PATH_CHEAPEST_ARC)
         routing.SetArcCostEvaluatorOfAllVehicles(Distance)
-        print pywrapcp.Solver
+
         assignment = routing.Solve()
         if assignment:
             # Solution cost.
@@ -55,4 +59,27 @@ dist = {0: [0,9,60,60,10],
 nodes = len(dist)
 
 # main(parser.parse_args())
-main(nodes)
+#main(nodes)
+
+
+
+
+#from ortools.linear_solver import pywraplp
+
+###########################################################
+##################### The main controller code starts here.
+###########################################################
+
+# Create instance of FieldStorage and get data
+form = cgi.FieldStorage()
+receivedMarkerData = form.getvalue('useTheseMarkers')
+## convert the received json string into a Python object
+#receivedGeoJson = json.loads(receivedMarkerData)
+
+# the magic happens here...
+#main()
+
+# prepare for output... the GeoJSON should be returned as a string
+#transformedMarkerData = json.dumps(js)
+print "Content-type:text/html\r\n\r\n"
+print str(main(nodes))

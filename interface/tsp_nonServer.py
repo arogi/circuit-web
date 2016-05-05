@@ -92,34 +92,6 @@ def SolveModel(start_time):
   else:
       print('Specify an instance greater than 0.')
 
-"""
-
-def generateGEOJSON(X, Y, H, p):
-
-  unweightedObj = 0
-  weightedObj = 0
-  assignment = -1
-
-  # update located facilities in the JSON
-  for j in range(numFacilities):
-    located = Y[j].SolutionValue()
-    js['features'][facilityIDs[j]]['properties']['facilityLocated'] = located
-
-  # update assignments in the JSON
-  for i in range(numDemands):
-    for k in range(H[i]):
-     if (X[i][k].SolutionValue() == True):
-       j = dSort[i,k]
-       js['features'][demandIDs[i]]['properties']['assignedTo'] = facilityIDs[j]
-
-  writeToGJSFile(js, p)
-
-
-def writeToGJSFile(js, p):
-
-  with open('./data/PMedianResult_s%d_p%d_B.json' % (numFeatures, p), 'w') as outfile:
-    json.dump(js,outfile)
-"""
 #
 # Read a problem instance from a file
 #
@@ -179,7 +151,6 @@ def readJSONstrObjANDsolve(jsonStrObj,p):
 
 def main(p):
   print "Setting up and solving problem!"
-  warnings.filterwarnings("ignore")
   RunTSP(nodes)
   if js != None:
     return js
