@@ -28,6 +28,9 @@ from scipy.spatial.distance import cdist
 from ortools.constraint_solver import pywrapcp
 from ortools.constraint_solver import routing_enums_pb2
 from bisect import bisect
+import warnings
+
+warnings.filterwarnings("ignore")
 
 printModel = False
 
@@ -89,34 +92,6 @@ def SolveModel(start_time):
   else:
       print('Specify an instance greater than 0.')
 
-"""
-
-def generateGEOJSON(X, Y, H, p):
-
-  unweightedObj = 0
-  weightedObj = 0
-  assignment = -1
-
-  # update located facilities in the JSON
-  for j in range(numFacilities):
-    located = Y[j].SolutionValue()
-    js['features'][facilityIDs[j]]['properties']['facilityLocated'] = located
-
-  # update assignments in the JSON
-  for i in range(numDemands):
-    for k in range(H[i]):
-     if (X[i][k].SolutionValue() == True):
-       j = dSort[i,k]
-       js['features'][demandIDs[i]]['properties']['assignedTo'] = facilityIDs[j]
-
-  writeToGJSFile(js, p)
-
-
-def writeToGJSFile(js, p):
-
-  with open('./data/PMedianResult_s%d_p%d_B.json' % (numFeatures, p), 'w') as outfile:
-    json.dump(js,outfile)
-"""
 #
 # Read a problem instance from a file
 #
@@ -186,7 +161,7 @@ def main(p):
 if __name__ == '__main__':
   readType = 2
 
-  print "DEBUG: sys.argv = " + str(sys.argv)
+  #print "DEBUG: sys.argv = " + str(sys.argv)
   if len(sys.argv) > 2:
     p = float(sys.argv[1])
     file = sys.argv[2]
