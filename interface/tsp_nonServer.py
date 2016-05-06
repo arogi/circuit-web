@@ -95,12 +95,10 @@ def SolveModel(start_time):
 #
 # Read a problem instance from a file
 #
-def read_problem(file, p, readType):
+def read_problem(file, readType):
   global dSort
   global d
   global numFeatures
-  global demandIDs
-  global demandArray
   global js
   global jsonRowDictionary
   global nodes
@@ -115,27 +113,13 @@ def read_problem(file, p, readType):
       js = json.load(f)
   else:
     print "READ TYPE ERROR!!"
-
   numFeatures = len(js['features'])
-
-  # if the geoJSON includes a p value, use this rather than any input arguments
-  try:
-    p = js['properties']['pValue']
-  except IOError:
-    print "geoJSON has no pValue"
-
-  # or manually set p
-  # p = 4
-
   xyPointArray = [[None for k in range(2)] for j in range(numFeatures)]
   xyPointArray = GISOps.GetCONUSeqDprojCoords(js) # Get the Distance Coordinates in CONUS EqD Projection
   #print xyPointArray
-  #facilityIDs = []
-  #demandIDs = []
   nodeID = []
   # rowID holds the index of each feature in the JSON object
   rowID = 0
-
   for element in js['features']:
       if element['properties']['pointID'] != None: #Parse through node ID's
           nodeID.append(rowID)
@@ -143,13 +127,13 @@ def read_problem(file, p, readType):
   nodes = len(nodeID)
   print("Number of Nodes: {0}".format(nodes))
 
-def readJSONstrObjANDsolve(jsonStrObj,p):
+def readJSONstrObjANDsolve(jsonStrObj):
   readType = 1
-  p = read_problem(jsonStrObj, p, readType)
+  read_problem(jsonStrObj, readType)
   #main(p)
   return js
 
-def main(p):
+def main():
   print "Setting up and solving problem!"
   RunTSP(nodes)
   if js != None:
@@ -160,16 +144,20 @@ def main(p):
 
 if __name__ == '__main__':
   readType = 2
-
   #print "DEBUG: sys.argv = " + str(sys.argv)
   if len(sys.argv) > 2:
-    p = float(sys.argv[1])
-    file = sys.argv[2]
-    print "Problem instance from", file
-    p = read_problem(file, p, readType)
-    main(p)
+    #p = float(sys.argv[1])
+    #print "sys.argv is " + str(sys.argv[1]) + " and its type is: " + str(type(sys.argv[1]))
+    if sys.argv[1] == "tsp" or sys.argv[1] == "TSP":
+        string = sys.argv[2].split(".")
+        if "geojson" in string[-1] or "geoJSON" in string[-1]:
+            file = sys.argv[2]
+            print "Problem instance from", file
+            read_problem(file, readType)
+            main()
+        else:
+            print "Please use a *.geojson formatted file"
   elif len(sys.argv) > 1:
-    p = float(sys.argv[1])
-    main(p)
+    main()
   else:
     main(None)
