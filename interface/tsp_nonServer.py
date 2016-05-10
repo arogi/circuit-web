@@ -152,8 +152,8 @@ def generateGEOJSON():
     stop = False
     i = 0
     while stop == False:
-        js['features'][nodeID[routeCoord[i][0]]]['properties']['facilityLocated'] = routeCoord[i][2]
-        js['features'][nodeID[routeCoord[i][0]]]['properties']['assignedTo'] = routeCoord[i][3]
+        js['features'][nodeID[routeCoord[i][0]]]['properties']['facilityLocated'] = i
+        js['features'][nodeID[routeCoord[i][0]]]['properties']['assignedTo'] = routeCoord[i][1]
         i +=1
         if i >= nodes:
             stop = True

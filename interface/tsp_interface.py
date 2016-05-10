@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 # Copyright 2015-2016 Arogi Inc
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -20,63 +22,53 @@
 """
 
 import cgi
-import sys
 import json
 import GISOps
-import time
 import numpy as np
 from scipy.spatial.distance import cdist
 from ortools.constraint_solver import pywrapcp
 from ortools.constraint_solver import routing_enums_pb2
-from bisect import bisect
 import warnings
 
 warnings.filterwarnings("ignore")
 
 printModel = False
 
-readType = 1
-
 def main():
-  #print "Setting up and solving problem!"
-  readJSONandSolve()
+    readJSONandSolve()
+    generateGEOJSON()
 
 def readJSONandSolve():
-  read_problem(receivedMarkerData)
-  RunTSP(nodes)
+    p = read_problem(receivedMarkerData, 1)
+    RunTSP()
 
-def RunTSP(nodes):
+def RunTSP():
     #TSP using Google OR-Tools Constraint Programming model example
-    warnings.filterwarnings("ignore")
-    start_time = time.time()
     PreComputeDistances() #compute the distances between points
     #DEBUG: quick print of dist matrix
     #print d
-    SolveModel(start_time)
-
-    total_time = time.time()-start_time
-    print "The total solution time is: " + str(total_time)
+    SolveModel()
 
 def PreComputeDistances():
-
     #declare a couple variables
+    global dSort
     global d
 
     A = xyPointArray
     B = xyPointArray
-
+    #print A
+    #print B
     d = cdist(A, B,'euclidean')
-    #dSort = np.argsort(d, axis=1)
+    dSort = np.argsort(d, axis=1)
     #print d
 
 def Distance(i,j):
     return d[i][j]
 
-def SolveModel(start_time):
+def SolveModel():
   """Solve the problem and print the solution."""
   global route
   global routeCoord
-  warnings.filterwarnings("ignore")
   if nodes > 0:
       # TSP of size args.tsp_size
       # Second argument = 1 to build a single tour (it's a TSP).
@@ -90,7 +82,7 @@ def SolveModel(start_time):
       assignment = routing.Solve()
       if assignment:
           # Solution cost.
-          print "TSP Objective for " + str(nodes) + " nodes is: " + str(assignment.ObjectiveValue())
+          #print "TSP Objective for " + str(nodes) + " nodes is: " + str(assignment.ObjectiveValue())
           # Inspect solution.
           # Only one route here; otherwise iterate from 0 to routing.vehicles() - 1
           route_number = 0
@@ -102,13 +94,12 @@ def SolveModel(start_time):
               route += str(node) + ' -> '
               prevNode = int(node)
               node = assignment.Value(routing.NextVar(node))
-              routeCoord[i] = [prevNode, int(node), xyPointArray[prevNode], xyPointArray[node]]
+              # xyPointArray
+              if i < nodes-1:
+                  routeCoord[i] = [prevNode, int(node), xyPointArray[prevNode], xyPointArray[node]]
               i += 1
           route += '0'
-          routeCoord[i] = [prevNode, 0, xyPointArray[prevNode], xyPointArray[0]]
-          #routeCoord += str(xyPointArray[0])
-          #print(route)
-          #print(routeCoord)
+          routeCoord[i-1] = [prevNode, 0, xyPointArray[prevNode], xyPointArray[0]]
       else:
           print('No solution found.')
   else:
@@ -117,7 +108,7 @@ def SolveModel(start_time):
 #
 # Read a problem instance from a file
 #
-def read_problem(file):
+def read_problem(file, readType):
   global d
   global numFeatures
   global js
@@ -127,10 +118,8 @@ def read_problem(file):
   global nodeID
 
   if readType == 1:
-    #print 'Reading JSON String Object'
     js = json.loads(file)
   elif readType == 2:
-    print 'readFile({0})'.format(file)
     with open(file,"r") as f:
       js = json.load(f)
   else:
@@ -138,7 +127,6 @@ def read_problem(file):
   numFeatures = len(js['features'])
   xyPointArray = [[None for k in range(2)] for j in range(numFeatures)]
   xyPointArray = GISOps.GetCONUSeqDprojCoords(js) # Get the Distance Coordinates in CONUS EqD Projection
-  #print xyPointArray
   nodeID = []
   # rowID holds the index of each feature in the JSON object
   rowID = 0
@@ -147,7 +135,6 @@ def read_problem(file):
           nodeID.append(rowID)
       rowID += 1
   nodes = len(nodeID)
-  #print("Number of Nodes: {0}".format(nodes))
 
 ### This function will return a geojson formatted string to send back to the web
 ### Since it is based on the p-Median/MCLP data files we can use some of those
@@ -163,7 +150,7 @@ def generateGEOJSON():
         js['features'][nodeID[routeCoord[i][0]]]['properties']['facilityLocated'] = routeCoord[i][2]
         js['features'][nodeID[routeCoord[i][0]]]['properties']['assignedTo'] = routeCoord[i][3]
         i +=1
-        if i >= len(nodes):
+        if i >= nodes:
             stop = True
     ### As of this moment js is the output file... ready to be delivered back to
     ### as the solution
