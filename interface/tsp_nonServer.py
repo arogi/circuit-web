@@ -20,6 +20,7 @@
 """
 
 import sys
+import os
 import json
 import GISOps
 import time
@@ -43,7 +44,7 @@ def RunTSP(nodes):
     SolveModel(start_time)
 
     total_time = time.time()-start_time
-    print "The total solution time is: " + str(total_time)
+    #print "The total solution time is: " + str(total_time)
 
 def PreComputeDistances():
 
@@ -53,7 +54,8 @@ def PreComputeDistances():
 
     A = xyPointArray
     B = xyPointArray
-
+    #print A
+    #print B
     d = cdist(A, B,'euclidean')
     dSort = np.argsort(d, axis=1)
     #print d
@@ -63,6 +65,9 @@ def Distance(i,j):
 
 def SolveModel(start_time):
   """Solve the problem and print the solution."""
+  global route
+  global routeCoord
+  warnings.filterwarnings("ignore")
   if nodes > 0:
       # TSP of size args.tsp_size
       # Second argument = 1 to build a single tour (it's a TSP).
@@ -76,17 +81,26 @@ def SolveModel(start_time):
       assignment = routing.Solve()
       if assignment:
           # Solution cost.
-          print "TSP Objective for " + str(nodes) + " nodes is: " + str(assignment.ObjectiveValue())
+          #print "TSP Objective for " + str(nodes) + " nodes is: " + str(assignment.ObjectiveValue())
           # Inspect solution.
           # Only one route here; otherwise iterate from 0 to routing.vehicles() - 1
           route_number = 0
           node = 0
+          i = 0
           route = ''
+          routeCoord = {}
           while not routing.IsEnd(node):
               route += str(node) + ' -> '
+              prevNode = int(node)
               node = assignment.Value(routing.NextVar(node))
+              # xyPointArray
+              if i < nodes-1:
+                  routeCoord[i] = [prevNode, int(node), xyPointArray[prevNode], xyPointArray[node]]
+              i += 1
           route += '0'
-          print(route)
+          routeCoord[i-1] = [prevNode, 0, xyPointArray[prevNode], xyPointArray[0]]
+          #print(route)
+          #print(routeCoord)
       else:
           print('No solution found.')
   else:
@@ -96,19 +110,19 @@ def SolveModel(start_time):
 # Read a problem instance from a file
 #
 def read_problem(file, readType):
-  global dSort
   global d
   global numFeatures
   global js
   global jsonRowDictionary
   global nodes
   global xyPointArray
+  global nodeID
 
   if readType == 1:
-    print 'Reading JSON String Object'
+    #print 'Reading JSON String Object'
     js = json.loads(file)
   elif readType == 2:
-    print 'readFile({0})'.format(file)
+    #print 'readFile({0})'.format(file)
     with open(file,"r") as f:
       js = json.load(f)
   else:
@@ -125,17 +139,47 @@ def read_problem(file, readType):
           nodeID.append(rowID)
       rowID += 1
   nodes = len(nodeID)
-  print("Number of Nodes: {0}".format(nodes))
+  #print("Number of Nodes: {0}".format(nodes))
+
+### This function will return a geojson formatted string to send back to the web
+### Since it is based on the p-Median/MCLP data files we can use some of those
+### atributes to send back. In this case facilityLocated represents the 'from
+### node' and assignedTo represents the 'to node' for the TSP.
+def generateGEOJSON():
+    assignment = -1
+    located = -1
+    node = 0
+    stop = False
+    i = 0
+    while stop == False:
+        js['features'][nodeID[routeCoord[i][0]]]['properties']['facilityLocated'] = routeCoord[i][2]
+        js['features'][nodeID[routeCoord[i][0]]]['properties']['assignedTo'] = routeCoord[i][3]
+        i +=1
+        if i >= nodes:
+            stop = True
+    ### As of this moment js is the output file... ready to be delivered back to
+    ### as the solution
+    writeToGJSFile(js)
+    return 1
 
 def readJSONstrObjANDsolve(jsonStrObj):
-  readType = 1
-  read_problem(jsonStrObj, readType)
-  #main(p)
-  return js
+    readType = 1
+
+    read_problem(jsonStrObj, readType)
+    main()
+    return js
+
+def writeToGJSFile(js):
+    writePath = '../data/tspResult_s%d.json' %(numFeatures)
+    mode = 'w' #'a' if os.path.exists(writePath) else 'w'
+    with open(writePath, mode) as outfile:
+        json.dump(js,outfile)
 
 def main():
-  print "Setting up and solving problem!"
+  #print "Setting up and solving problem!"
   RunTSP(nodes)
+  generateGEOJSON()
+  #print js
   if js != None:
     return js
   else:
@@ -145,19 +189,15 @@ def main():
 if __name__ == '__main__':
   readType = 2
   #print "DEBUG: sys.argv = " + str(sys.argv)
-  if len(sys.argv) > 2:
-    #p = float(sys.argv[1])
+  if len(sys.argv) > 1:
     #print "sys.argv is " + str(sys.argv[1]) + " and its type is: " + str(type(sys.argv[1]))
-    if sys.argv[1] == "tsp" or sys.argv[1] == "TSP":
-        string = sys.argv[2].split(".")
-        if "geojson" in string[-1] or "geoJSON" in string[-1]:
-            file = sys.argv[2]
-            print "Problem instance from", file
-            read_problem(file, readType)
-            main()
-        else:
-            print "Please use a *.geojson formatted file"
-  elif len(sys.argv) > 1:
-    main()
+    string = sys.argv[1].split(".")
+    if "geojson" in string[-1] or "geoJSON" in string[-1]:
+        file = sys.argv[1]
+        print "Problem instance from ", file
+        read_problem(file, readType)
+        main()
+    else:
+        print "Please use a *.geojson formatted file"
   else:
     main(None)

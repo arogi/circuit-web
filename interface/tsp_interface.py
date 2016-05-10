@@ -19,6 +19,7 @@
    p-Median problems.
 """
 
+import cgi
 import sys
 import json
 import GISOps
@@ -34,8 +35,19 @@ warnings.filterwarnings("ignore")
 
 printModel = False
 
+readType = 1
+
+def main():
+  #print "Setting up and solving problem!"
+  readJSONandSolve()
+
+def readJSONandSolve():
+  read_problem(receivedMarkerData)
+  RunTSP(nodes)
+
 def RunTSP(nodes):
     #TSP using Google OR-Tools Constraint Programming model example
+    warnings.filterwarnings("ignore")
     start_time = time.time()
     PreComputeDistances() #compute the distances between points
     #DEBUG: quick print of dist matrix
@@ -48,14 +60,13 @@ def RunTSP(nodes):
 def PreComputeDistances():
 
     #declare a couple variables
-    global dSort
     global d
 
     A = xyPointArray
     B = xyPointArray
 
     d = cdist(A, B,'euclidean')
-    dSort = np.argsort(d, axis=1)
+    #dSort = np.argsort(d, axis=1)
     #print d
 
 def Distance(i,j):
@@ -63,6 +74,9 @@ def Distance(i,j):
 
 def SolveModel(start_time):
   """Solve the problem and print the solution."""
+  global route
+  global routeCoord
+  warnings.filterwarnings("ignore")
   if nodes > 0:
       # TSP of size args.tsp_size
       # Second argument = 1 to build a single tour (it's a TSP).
@@ -81,61 +95,39 @@ def SolveModel(start_time):
           # Only one route here; otherwise iterate from 0 to routing.vehicles() - 1
           route_number = 0
           node = 0
+          i = 0
           route = ''
+          routeCoord = {}
           while not routing.IsEnd(node):
               route += str(node) + ' -> '
+              prevNode = int(node)
               node = assignment.Value(routing.NextVar(node))
+              routeCoord[i] = [prevNode, int(node), xyPointArray[prevNode], xyPointArray[node]]
+              i += 1
           route += '0'
-          print(route)
+          routeCoord[i] = [prevNode, 0, xyPointArray[prevNode], xyPointArray[0]]
+          #routeCoord += str(xyPointArray[0])
+          #print(route)
+          #print(routeCoord)
       else:
           print('No solution found.')
   else:
       print('Specify an instance greater than 0.')
 
-"""
-
-def generateGEOJSON(X, Y, H, p):
-
-  unweightedObj = 0
-  weightedObj = 0
-  assignment = -1
-
-  # update located facilities in the JSON
-  for j in range(numFacilities):
-    located = Y[j].SolutionValue()
-    js['features'][facilityIDs[j]]['properties']['facilityLocated'] = located
-
-  # update assignments in the JSON
-  for i in range(numDemands):
-    for k in range(H[i]):
-     if (X[i][k].SolutionValue() == True):
-       j = dSort[i,k]
-       js['features'][demandIDs[i]]['properties']['assignedTo'] = facilityIDs[j]
-
-  writeToGJSFile(js, p)
-
-
-def writeToGJSFile(js, p):
-
-  with open('./data/PMedianResult_s%d_p%d_B.json' % (numFeatures, p), 'w') as outfile:
-    json.dump(js,outfile)
-"""
 #
 # Read a problem instance from a file
 #
-def read_problem(file, p, readType):
-  global dSort
+def read_problem(file):
   global d
   global numFeatures
-  global demandIDs
-  global demandArray
   global js
   global jsonRowDictionary
   global nodes
   global xyPointArray
+  global nodeID
 
   if readType == 1:
-    print 'Reading JSON String Object'
+    #print 'Reading JSON String Object'
     js = json.loads(file)
   elif readType == 2:
     print 'readFile({0})'.format(file)
@@ -143,62 +135,54 @@ def read_problem(file, p, readType):
       js = json.load(f)
   else:
     print "READ TYPE ERROR!!"
-
   numFeatures = len(js['features'])
-
-  # if the geoJSON includes a p value, use this rather than any input arguments
-  try:
-    p = js['properties']['pValue']
-  except IOError:
-    print "geoJSON has no pValue"
-
-  # or manually set p
-  # p = 4
-
   xyPointArray = [[None for k in range(2)] for j in range(numFeatures)]
   xyPointArray = GISOps.GetCONUSeqDprojCoords(js) # Get the Distance Coordinates in CONUS EqD Projection
   #print xyPointArray
-  #facilityIDs = []
-  #demandIDs = []
   nodeID = []
   # rowID holds the index of each feature in the JSON object
   rowID = 0
-
   for element in js['features']:
       if element['properties']['pointID'] != None: #Parse through node ID's
           nodeID.append(rowID)
       rowID += 1
   nodes = len(nodeID)
-  print("Number of Nodes: {0}".format(nodes))
+  #print("Number of Nodes: {0}".format(nodes))
 
-def readJSONstrObjANDsolve(jsonStrObj,p):
-  readType = 1
-  p = read_problem(jsonStrObj, p, readType)
-  #main(p)
-  return js
+### This function will return a geojson formatted string to send back to the web
+### Since it is based on the p-Median/MCLP data files we can use some of those
+### atributes to send back. In this case facilityLocated represents the 'from
+### node' and assignedTo represents the 'to node' for the TSP.
+def generateGEOJSON():
+    assignment = -1
+    located = -1
+    node = 0
+    stop = False
+    i = 0
+    while stop == False:
+        js['features'][nodeID[routeCoord[i][0]]]['properties']['facilityLocated'] = routeCoord[i][2]
+        js['features'][nodeID[routeCoord[i][0]]]['properties']['assignedTo'] = routeCoord[i][3]
+        i +=1
+        if i >= len(nodes):
+            stop = True
+    ### As of this moment js is the output file... ready to be delivered back to
+    ### as the solution
+    return 1
 
-def main(p):
-  print "Setting up and solving problem!"
-  warnings.filterwarnings("ignore")
-  RunTSP(nodes)
-  if js != None:
-    return js
-  else:
-    print 'YOU ARE DUMB! You should be using exception handling!'
-    return None
+###########################################################
+##################### The main controller code starts here.
+###########################################################
 
-if __name__ == '__main__':
-  readType = 2
+# Create instance of FieldStorage and get data
+form = cgi.FieldStorage()
+receivedMarkerData = form.getvalue('useTheseMarkers')
+## convert the received json string into a Python object
+#receivedGeoJson = json.loads(receivedMarkerData)
 
-  #print "DEBUG: sys.argv = " + str(sys.argv)
-  if len(sys.argv) > 2:
-    p = float(sys.argv[1])
-    file = sys.argv[2]
-    print "Problem instance from", file
-    p = read_problem(file, p, readType)
-    main(p)
-  elif len(sys.argv) > 1:
-    p = float(sys.argv[1])
-    main(p)
-  else:
-    main(None)
+# the magic happens here...
+main()
+
+# prepare for output... the GeoJSON should be returned as a string
+transformedMarkerData = json.dumps(js)
+print "Content-type:text/html\r\n\r\n"
+print transformedMarkerData
