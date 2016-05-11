@@ -80,10 +80,15 @@
 
         someSortOfCounter = 0;
         //alert(someSortOfCounter);
+
         $.each(myFriendlyGeoJsonObject.features, function(i, v) {
-          myRouteCoordinates[someSortOfCounter] = v.geometry.coordinates;
-          myLatCoords[someSortOfCounter] = [myRouteCoordinates[someSortOfCounter][1],myRouteCoordinates[someSortOfCounter][0]];
-          someSortOfCounter++;
+          myRouteOrigin = v.geometry.coordinates;
+          dest = v.properties.assignedTo;
+          myRouteDest = myFriendlyGeoJsonObject.features[dest].geometry.coordinates;
+          myLatCoords[0] = [myRouteOrigin[1],myRouteOrigin[0]];
+          myLatCoords[1] = [myRouteDest[1],myRouteDest[0]];
+          var polyline = L.polyline(myLatCoords, {color: 'red'}).addTo(map);
+
         });
 
         //alert(String(myFriendlyGeoJsonObject));
@@ -91,7 +96,7 @@
         myLatCoords[someSortOfCounter] = myLatCoords[0];
         //myRouteCoordinates.push = myRouteCoordinates[0];
         document.getElementById('test_area').innerHTML = JSON.stringify(myLatCoords);
-        var polyline = L.polyline(myLatCoords, {color: 'red'}).addTo(map);
+        //var polyline = L.polyline(myLatCoords, {color: 'red'}).addTo(map);
       },
 
 //        somesortofcounter = 0;
