@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
 <head>
   <title>Arogi Traveling Salesman</title>
@@ -10,8 +10,7 @@
   <script src="ajax_functions.js"></script>
   <!-- // this loads a geojson of starting points.
   // the variable is called defaultMarkers -->
-  <script src="data/mclp_data_500.js"></script>
-
+  <script src="data/mclp_data_100.js"></script>
 
   <style>
 
@@ -32,24 +31,22 @@
 </head>
 
 <body>
-  <div id = "test_area">
-    test area
-  </div>
 
   <div id="map"></div>
 
   <script>
 
+  //defaultMarkers is called from the data.js script.
+  answeredGeoJson = defaultMarkers;
+
+
   $(document).ready(function() {
 
-    circleArray = new Array();
-    redDots = new Array();
+    polyline1 = new Array();
+    polyline2 = new Array();
+    polyline3 = new Array();
     simpleCount = 0;
     var pointMarkers;
-    problemState = 0;
-
-
-
 
 
     var useTheseMarkers = JSON.stringify(answeredGeoJson);
@@ -60,65 +57,62 @@
       data: {useTheseMarkers:useTheseMarkers},
       success: function(answerText)
       {
-        // overwrites and displays existing answeredGeoJson...
-        // with the response GeoJSON from the server
-        //answeredGeoJson = JSON.parse(answerText);
 
-        if (pointMarkers != undefined) {
-                map.removeLayer(pointMarkers);
-        }
-
-
-        // to do: convert your response from the tsp interface from text into a json object
         answeredGeoJson = JSON.parse(answerText);
-        //document.getElementById('test_area').innerHTML = answeredGeoJson.features;
-        // to do: make myPointCoordinates into an array
 
         var myRouteCoordinates = new Array();
-        var myCoords = new Array();
+        var myRearrangedCoords = new Array();
         myFriendlyGeoJsonObject = answeredGeoJson;
 
         someSortOfCounter = 0;
-        //alert(someSortOfCounter);
-
         $.each(myFriendlyGeoJsonObject.features, function(i, v) {
           myRouteOrigin = v.geometry.coordinates;
           dest = v.properties.assignedTo;
           myRouteDest = myFriendlyGeoJsonObject.features[dest].geometry.coordinates;
-          myCoords[0] = [myRouteOrigin[1],myRouteOrigin[0]];
-          myCoords[1] = [myRouteDest[1],myRouteDest[0]];
-          var polyline = L.polyline(myCoords, {color: 'red'}).addTo(map);
-
+          myRearrangedCoords[0] = [myRouteOrigin[1],myRouteOrigin[0]];
+          myRearrangedCoords[1] = [myRouteDest[1],myRouteDest[0]];
+          polyline1[someSortOfCounter] = L.polyline(myRearrangedCoords, {color: '#ccffff', weight:16, opacity:0.12});
+          polyline2[someSortOfCounter] = L.polyline(myRearrangedCoords, {color: '#006699', weight:6, opacity:1});
+          polyline3[someSortOfCounter] = L.polyline(myRearrangedCoords, {color: '#66ccff', weight:4, opacity:1});
+          someSortOfCounter++;
         });
 
-        //alert(String(myFriendlyGeoJsonObject));
+        for (index = 0; index < polyline1.length; ++index) {
+            polyline1[index].addTo(map);
+        }
 
-        myCoords[someSortOfCounter] = myCoords[0];
-        //myRouteCoordinates.push = myRouteCoordinates[0];
-        //document.getElementById('test_area').innerHTML = JSON.stringify(myCoords);
-        //var polyline = L.polyline(myCoords, {color: 'red'}).addTo(map);
+        for (index = 0; index < polyline2.length; ++index) {
+            polyline2[index].addTo(map);
+        }
+
+        for (index = 0; index < polyline3.length; ++index) {
+            polyline3[index].addTo(map);
+        }
+
+        // if you ever want to use a marker icon instead, here you go...
+        ffffffIcon = L.icon({
+            iconUrl: '/images/ffffff.png',
+            iconSize:     [6, 6], // size of the icon
+            iconAnchor:   [3, 3], // point of the icon which will correspond to marker's location
+        });
+
+        pointMarkers = L.geoJson(answeredGeoJson, {
+          pointToLayer: function (feature, latlng) {
+
+            return L.circleMarker(latlng, {radius: 5, fillColor: "#ffffff", color:"#006699",weight:2,opacity:1,fillOpacity:0.65});
+            // return L.marker(latlng, {icon: ffffffIcon}).bindPopup(String(latlng));
+          }
+        });
+
+        pointMarkers.addTo(map);
+
+
       },
-
-//        somesortofcounter = 0;
-//        $.each(answeredGeoJson.features, function(i, v) {
-//          myPointsCoordinates[somesortofcounter] = answerCoordinates = v.geometry.coordinates;
-//          somesortofcounter++;
-//        }
-
       error: function()
       {
-        //// fail
+        //// fail --- todo: add a nice fallback
       }
-
     });
-
-
-
-
-
-
-
-
 
   });
 
@@ -133,23 +127,14 @@
   L.control.scale().setPosition('bottomright').addTo(map);
   new L.Control.Zoom({ position: 'bottomright' }).addTo(map);
 
-
-  // this gets called on document.ready since the map needs a bounding area and
-  // the initial ajax call might take a long time.
-  //defaultMarkers is called from the data.js script.
-  answeredGeoJson = defaultMarkers;
-  //marker.bindPopup(popupContent).openPopup();
-  var pointMarkers = L.geoJson(answeredGeoJson, {
+  // not shown, but read just to get appropriate map bounds... before the ajax call
+  pointMarkers2 = L.geoJson(answeredGeoJson, {
     pointToLayer: function (feature, latlng) {
-      var popupOptions = {maxWidth: 200};
-      //var popupContent = "This is some content";
-      return L.marker(latlng).bindPopup(String(latlng),popupOptions);
+      return L.circleMarker(latlng);
     }
   });
-  // but the points do not need to be shown
-  pointMarkers.addTo(map);
 
-  map.fitBounds(pointMarkers, {padding:[140,140]});
+  map.fitBounds(pointMarkers2, {padding:[140,140]});
 
   </script>
 
