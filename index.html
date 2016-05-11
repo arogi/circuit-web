@@ -10,7 +10,7 @@
   <script src="ajax_functions.js"></script>
   <!-- // this loads a geojson of starting points.
   // the variable is called defaultMarkers -->
-  <script src="data/tsp_data_SB14.js"></script>
+  <script src="data/mclp_data_500.js"></script>
 
 
   <style>
@@ -75,7 +75,7 @@
         // to do: make myPointCoordinates into an array
 
         var myRouteCoordinates = new Array();
-        var myLatCoords = new Array();
+        var myCoords = new Array();
         myFriendlyGeoJsonObject = answeredGeoJson;
 
         someSortOfCounter = 0;
@@ -85,18 +85,18 @@
           myRouteOrigin = v.geometry.coordinates;
           dest = v.properties.assignedTo;
           myRouteDest = myFriendlyGeoJsonObject.features[dest].geometry.coordinates;
-          myLatCoords[0] = [myRouteOrigin[1],myRouteOrigin[0]];
-          myLatCoords[1] = [myRouteDest[1],myRouteDest[0]];
-          var polyline = L.polyline(myLatCoords, {color: 'red'}).addTo(map);
+          myCoords[0] = [myRouteOrigin[1],myRouteOrigin[0]];
+          myCoords[1] = [myRouteDest[1],myRouteDest[0]];
+          var polyline = L.polyline(myCoords, {color: 'red'}).addTo(map);
 
         });
 
         //alert(String(myFriendlyGeoJsonObject));
 
-        myLatCoords[someSortOfCounter] = myLatCoords[0];
+        myCoords[someSortOfCounter] = myCoords[0];
         //myRouteCoordinates.push = myRouteCoordinates[0];
-        document.getElementById('test_area').innerHTML = JSON.stringify(myLatCoords);
-        //var polyline = L.polyline(myLatCoords, {color: 'red'}).addTo(map);
+        //document.getElementById('test_area').innerHTML = JSON.stringify(myCoords);
+        //var polyline = L.polyline(myCoords, {color: 'red'}).addTo(map);
       },
 
 //        somesortofcounter = 0;
