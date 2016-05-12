@@ -33,6 +33,81 @@
 
   <div id="map"></div>
 
+  <div id="arogi-menu-main">
+
+    <div id="arogi-top-zone">Arogi Circuit</div>
+    <div id="arogi-menu-upper">
+      <button id="id">Load</button>
+      <input id="yourinputname" type="file" name="yourinputname" style="display: none;" />
+      <span id="filenamespot">...data_1000.geojson</span>
+    </div>
+
+    <div id="arogi-menu-middle">
+      <div id="distance-slider-area">
+        <center>Length:</center>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+  $('#id').on('click', function() {
+    $('#yourinputname').trigger('click');
+  });
+
+  $('#yourinputname').on('change', function() {
+    filenameString = yourinputname.value;
+    if(filenameString.length > 15) {
+      filenameString = ".." + filenameString.substr(filenameString.length - 17);
+      //filenameString = filenameString.substring(0,10) + "...";
+      if (filenameString.length < 8) {
+        filenameString = yourinputname.value;
+      }
+    }
+    document.getElementById('filenamespot').innerHTML = filenameString;
+    document.getElementById('distance-slider-area').innerHTML = "working on<br>"+yourinputname.value;
+
+    // clear all layers except the map background itself
+    map.eachLayer(function (layer3) {
+      if (layer3 != backgroundLayer) {
+        map.removeLayer(layer3);
+      };
+    });
+
+    actual_JSON = "{\"key\":\"pair\"}";
+    loadTheJSONFileYay();
+
+  });
+
+
+  function loadJSON(callback) {
+
+    var xobj = new XMLHttpRequest();
+    xobj.overrideMimeType("application/json");
+    xobj.open('GET', yourinputname.value, true);
+    xobj.onreadystatechange = function () {
+      if (xobj.readyState == 4 && xobj.status == "200") {
+        // Required use of an anonymous callback as .open will NOT return a value but simply returns undefined in asynchronous mode
+        callback(xobj.responseText);
+      }
+    };
+    xobj.send(null);
+  }
+
+
+  function loadTheJSONFileYay() {
+   loadJSON(function(response) {
+    // Parse JSON string into object
+      actual_JSON = JSON.parse(response);
+      alert(JSON.stringify(actual_JSON));
+   });
+  }
+
+  </script>
+
+
+
+
   <script>
 
   //defaultMarkers is called from the data.js script.
@@ -58,6 +133,8 @@
       {
 
         answeredGeoJson = JSON.parse(answerText);
+
+        document.getElementById('distance-slider-area').innerHTML = "Length: " + answeredGeoJson.properties.efficacyPercentage;
 
         var myRouteCoordinates = new Array();
         var myRearrangedCoords = new Array();
@@ -117,11 +194,11 @@
 
   // add basemap tiles from Mapzen's Tangram
   var map = L.map('map', {zoomControl: false});
-  var layer = Tangram.leafletLayer({
+  var backgroundLayer = Tangram.leafletLayer({
     scene: 'grayprint.yaml',
     attribution: '<a href="arogi.com">Arogi</a> | &copy; <a href="http://osm.org">OpenSteetMap</a> | <a href="https://mapzen.com/tangram" target="_blank">Mapzen</a>'
   });
-  layer.addTo(map);
+  backgroundLayer.addTo(map);
 
   L.control.scale().setPosition('bottomright').addTo(map);
   new L.Control.Zoom({ position: 'bottomright' }).addTo(map);
