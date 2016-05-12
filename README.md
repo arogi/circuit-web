@@ -3,7 +3,7 @@
 
 *Prerequisites*  
 
-- The router takes a set of GeoJSON point features and returns an ordered set representing the shortest route to travel to them all. The demo comes with a few sample data sets, or you can use your own. You can quickly make your own at: [https://geojson.io](https://geojson.io)
+- The router takes a set of GeoJSON point features and returns an ordered set representing the shortest route to travel to them all and return. This implementation uses straightline distance, but we are open to adding street route distance if people want them. The demo comes with a few sample data sets, or you can use your own. You can quickly make your own at: [https://geojson.io](https://geojson.io).
 
 - Install docker. Their webpage has [instructions](https://docs.docker.com/engine/installation/).
 
@@ -21,10 +21,14 @@ in your browser address bar.
 
 *Shutting Down*  
 
-1. You will need the name of the docker container to shut everything down. To find this, type: `docker ps -a`. Take note of the name; it will be something like *silly_tonsils*
+1. You will need the name of the docker container to shut everything down. To find this, In your Terminal shell, type: `docker ps -a`. Take note of the name; it will be something like *silly_tonsils*
 
 2. Type: `docker stop container_name` to stop docker. Note: You can restart again if you like with `docker start docker_name`
 
 3. To remove the container, type: `docker rm container_name`
 
 4. To remove the image, type: `docker rmi arogi/circuit`
+
+*Limits*
+
+* None, actually. Via Docker, the whole thing is running on your hardware, so you can add as many points as you can stand.
