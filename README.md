@@ -21,9 +21,9 @@ in your browser address bar.
 
 *Shutting Down*  
 
-1. You will need the name of the docker container to shut everything down. To find this, In your Terminal shell, type: `docker ps -a`. Take note of the name; it will be something like *silly_tonsils*
+1. You will need the name of the docker container to shut everything down. To find this, In your Terminal shell, type: `docker ps -a`. Take note of the name; it will be something like *silly_tonsils*. For the rest of the steps, use the name wherever it says `container_name`
 
-2. Type: `docker stop container_name` to stop docker. Note: You can restart again if you like with `docker start docker_name`
+2. Type: `docker stop container_name` to stop docker. Note: You can restart again if you like with `docker start container_name`
 
 3. To remove the container, type: `docker rm container_name`
 
@@ -31,4 +31,4 @@ in your browser address bar.
 
 *Limits*
 
-* None, actually. Via Docker, the whole thing is running on your hardware, so you can add as many points as you can stand.
+* None, actually. Via Docker, the whole thing is running on your hardware, so you can add as many points as you can stand. On our individual laptops, 100 points loads immediately; 500 takes about xxx seconds, and 5000 takes xxx seconds.
