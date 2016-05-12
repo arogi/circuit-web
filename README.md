@@ -31,7 +31,7 @@ in your browser address bar.
 
 *Limits*
 
-* None, actually. Via Docker, the whole thing is running on your hardware, so you can add as many points as you can stand. On our individual laptops, 100 points loads immediately; 500 takes about xxx seconds, and 5000 takes xxx seconds.
+* None, actually. The map control and data use online sources; otherwise, via Docker, the whole thing is running on your hardware and you can add as many points as you can stand. On our individual laptops, 100 points loads immediately; 500 takes about xxx seconds, and 5000 takes xxx seconds.
 
 * Arogi Circuit is free and open source. Arogi code is under the Apache 2.0 License. We use a smattering of other open source libraries too, and you will find credits to them in the code-- particular thanks to Google, Mapzen, and Leaflet.
 
