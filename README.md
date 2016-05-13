@@ -36,3 +36,5 @@ in your browser address bar.
 * Arogi Circuit is free and open source. Arogi code is under the Apache 2.0 License. We use a smattering of other open source libraries too, and you will find credits to them in the code-- particular thanks to Google, Mapzen, and Leaflet.
 
 Enjoy!
+
+![Screenshot](https://raw.githubusercontent.com/arogi/circuit-web/master/images/tangle2.png)
