@@ -33,6 +33,17 @@
 
   <div id="map"></div>
 
+  <div id="arogi-menu-main">
+
+    <div id="arogi-top-zone">Arogi Circuit</div>
+    <div id="arogi-menu-upper">
+      <div id="distance-slider-area">Length:</div>
+      <div id="download-button"></div>
+    </div>
+
+  </div>
+
+
   <script>
 
   //defaultMarkers is called from the data.js script.
@@ -58,6 +69,8 @@
       {
 
         answeredGeoJson = JSON.parse(answerText);
+
+        document.getElementById('distance-slider-area').innerHTML = "Length: " + ((answeredGeoJson.properties.objective)/1000).toFixed(2) + " km";
 
         var myRouteCoordinates = new Array();
         var myRearrangedCoords = new Array();
@@ -117,11 +130,11 @@
 
   // add basemap tiles from Mapzen's Tangram
   var map = L.map('map', {zoomControl: false});
-  var layer = Tangram.leafletLayer({
+  var backgroundLayer = Tangram.leafletLayer({
     scene: 'grayprint.yaml',
     attribution: '<a href="arogi.com">Arogi</a> | &copy; <a href="http://osm.org">OpenSteetMap</a> | <a href="https://mapzen.com/tangram" target="_blank">Mapzen</a>'
   });
-  layer.addTo(map);
+  backgroundLayer.addTo(map);
 
   L.control.scale().setPosition('bottomright').addTo(map);
   new L.Control.Zoom({ position: 'bottomright' }).addTo(map);
@@ -133,6 +146,7 @@
     }
   });
 
+  // pointMarkers2.addTo(map);
   map.fitBounds(pointMarkers2, {padding:[140,140]});
 
   </script>
