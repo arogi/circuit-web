@@ -38,6 +38,7 @@
     <div id="arogi-top-zone">Arogi Circuit</div>
     <div id="arogi-menu-upper">
       <div id="distance-slider-area">Length:</div>
+      <div id="download-button"></div>
     </div>
 
   </div>
@@ -68,8 +69,6 @@
       {
 
         answeredGeoJson = JSON.parse(answerText);
-
-        alert(answerText);
 
         document.getElementById('distance-slider-area').innerHTML = "Length: " + ((answeredGeoJson.properties.objective)/1000).toFixed(2) + " km";
 
