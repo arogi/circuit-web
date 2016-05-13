@@ -47,7 +47,10 @@ def RunTSP():
     #TSP using Google OR-Tools Constraint Programming model example
     PreComputeDistances() #compute the distances between points
     objective = SolveModel()
+<<<<<<< HEAD
     return objective
+=======
+>>>>>>> d771d03ae6dcac558e5a1357797776a745433525
 
 def PreComputeDistances():
     #declare a couple variables
