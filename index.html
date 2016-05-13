@@ -134,7 +134,9 @@
 
         answeredGeoJson = JSON.parse(answerText);
 
-        document.getElementById('distance-slider-area').innerHTML = "Length: " + answeredGeoJson.properties.efficacyPercentage;
+        alert(answerText);
+
+        document.getElementById('distance-slider-area').innerHTML = "Length: " + answeredGeoJson.properties.objective;
 
         var myRouteCoordinates = new Array();
         var myRearrangedCoords = new Array();
