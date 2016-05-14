@@ -9,7 +9,7 @@
   <script src="https://mapzen.com/tangram/0.6/tangram.min.js"></script>
   <!-- // this loads a geojson of starting points.
   // the variable is called defaultMarkers -->
-  <script src="data/mclp_data_100.js"></script>
+  <script src="data/mydata.js"></script>
 
   <style>
 
@@ -79,7 +79,7 @@
         someSortOfCounter = 0;
         $.each(myFriendlyGeoJsonObject.features, function(i, v) {
           myRouteOrigin = v.geometry.coordinates;
-          dest = v.properties.assignedTo;
+          dest = v.properties.nextNode;
           myRouteDest = myFriendlyGeoJsonObject.features[dest].geometry.coordinates;
           myRearrangedCoords[0] = [myRouteOrigin[1],myRouteOrigin[0]];
           myRearrangedCoords[1] = [myRouteDest[1],myRouteDest[0]];
