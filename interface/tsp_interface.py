@@ -129,21 +129,26 @@ def read_problem(file, readType):
 
 
 ### This function will return a geojson formatted string to send back to the web
-### Since it is based on the p-Median/MCLP data files we can use some of those
-### atributes to send back. In this case facilityLocated represents the 'from
-### node' and assignedTo represents the 'to node' for the TSP.
+### In this case thisNode represents the 'from node' and nextNode represents the 'to node'
+### for the TSP.
 def generateGEOJSON(objective):
 
     for i in range(numFeatures):
         node = routeCoord[i][0]
         nextNode = routeCoord[i][1]
-        js['features'][node]['properties']['facilityLocated'] = node
-        js['features'][node]['properties']['assignedTo'] = nextNode
+        js['features'][node]['properties']['thisNode'] = node
+        js['features'][node]['properties']['nextNode'] = nextNode
 
+    # if properties does not exist in the geojson, create it
+    if 'properties' not in js:
+        js['properties'] = {}
+    # write the objective value into the geojson
     js['properties']['objective'] = objective
     ### As of this moment js is the output file... ready to be delivered back to
     ### as the solution
     return 1
+    
+    
 ###########################################################
 ##################### The main controller code starts here.
 ###########################################################
