@@ -1,4 +1,3 @@
-var defaultMarkers =
 {
   "type": "FeatureCollection",
   "features": [
@@ -256,4 +255,4 @@ var defaultMarkers =
       }
     }
   ]
-};
+}
