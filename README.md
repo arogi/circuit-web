@@ -3,7 +3,9 @@
 
 *Prerequisites*  
 
-- Arogi Circuit takes a set of GeoJSON point features and returns an ordered set representing the shortest route to travel to them all and return. For now, this implementation uses straightline, Euclidean, distance. The demo comes with a few sample data sets, or you can use your own. You can make your own at: [https://geojson.io](https://geojson.io).
+- Arogi Circuit takes a set of GeoJSON point features and returns an ordered set representing the shortest route to travel to them all and return. For now, this implementation uses straightline, Euclidean, distance. The demo comes with a few sample data sets, or you can use your own. You can make your a GeoJSON with: [https://geojson.io](https://geojson.io).
+
+- Place your GeoJSON file in a folder such as ~/data/ and rename it `mydata.geojson`.
 
 - We have bundled all the code to make Arogi Circuit work in a Docker container, so go install Docker. Their webpage has [instructions](https://docs.docker.com/engine/installation/).
 
@@ -11,13 +13,16 @@
 
 *Getting Started*
 
-1. Type: `docker pull arogi/circuit`  
-to grab the latest Arogi docker image. 
+1. Type: `docker pull arogi/circuit-web`  
+to grab the latest Arogi docker image.  
 
-2. Start your web browser.
+2. Type: `docker run -it -p 80:80 -v ~/data/:/var/www/html/data arogi/circuit-web`  
+to run Docker and have it find your data in the ~/data directory.
 
-6. Type `localhost`  
-in your browser address bar. 
+3. Start your web browser.
+
+4. Type `localhost`  
+in your browser address bar.  
 
 *Shutting Down*  
 
@@ -31,7 +36,7 @@ in your browser address bar.
 
 *Limits*
 
-* None, actually. The map control and data use online sources; otherwise, via Docker, the whole thing is running on your hardware. You can add as many points as you can stand. On our individual laptops, 100 points loads immediately; 500 takes about xxx seconds, and 5000 takes xxx seconds.
+* The map control and data use online sources; otherwise, via Docker, the whole thing is running on your hardware. You can add as many points as you can stand. On a normal, medium-slow laptop, 100 points load immediately; 500 take about 8 seconds, and 1000 take 45 seconds.
 
 * Arogi Circuit is free and open source. Arogi code is under the Apache 2.0 License. We use a smattering of other open source libraries too, and you will find credits to them in the code-- particular thanks to Google, Mapzen, and Leaflet.
 
