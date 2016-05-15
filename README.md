@@ -16,7 +16,7 @@
 1. Type: `docker pull arogi/circuit-web`  
 to grab the latest Arogi docker image.  
 
-2. Type: `docker run -it -p 80:80 -v ~/data/:/var/www/html/data arogi/circuit-web`
+2. Type: `docker run -it -p 80:80 -v ~/data/:/var/www/html/data arogi/circuit-web`  
 to run Docker and have it find your data in the ~/data directory.
 
 3. Start your web browser.
