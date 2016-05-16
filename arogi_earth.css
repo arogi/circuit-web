@@ -35,6 +35,23 @@
 	padding: 0 10px 0 0;
 }
 
+#myGreyButton {
+	float: right;
+	overflow:hidden;
+	width: 30%;
+	height: 25px;
+	background-color:#c7c7c7;
+	border:1px solid #000000;
+	cursor:pointer;
+	color:#000000;
+	font-size:12px;
+	margin: 10px 0px 10px 0px;
+ 	text-align: center;
+	text-decoration: none;
+	line-height: 27px;
+}
+
+
 
 
 #arogi-top-zone {
@@ -55,10 +72,15 @@
 	user-select: none;          /* Likely future */
 }
 
+#solution-display {
+		max-width: 160px;
+    word-wrap: break-word;
+}
+
+
 #arogi-menu-upper {
 	height: 50px;
-	width: 80%;
-	padding: 0 10% 0 10%;
+	padding: 0 7% 0 7%;
 	/* background: #74a9cf; */
 	color: white;
 	line-height: 50px; /* meant to create vertical alignment */

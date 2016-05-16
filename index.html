@@ -28,28 +28,29 @@
 </head>
 
 <body>
-
   <div id="map"></div>
+
+
+
 
   <div id="arogi-menu-main">
 
     <div id="arogi-top-zone">Arogi Circuit</div>
     <div id="arogi-menu-upper">
-      <div id="distance-slider-area">Length:</div>
-      <div id="download-button"></div>
+      <span id="solution-display">Length:</span><div id="myGreyButton">Download</div>
     </div>
 
   </div>
-
 
   <script>
 
   // this loads the geoJSON, with the code everything is held up until the file loads
   $.when($.getJSON("data/nps_parks.geojson")).done(function(answeredGeoJson) {
 
-    //answeredGeoJson = defaultMarkers;
+
 
     $(document).ready(function() {
+
 
       polyline1 = new Array();
       polyline2 = new Array();
@@ -68,9 +69,15 @@
         success: function(answerText)
         {
 
+
+          $("#myGreyButton").click(function(){
+            alert("download json data");
+          });
+
+
           answeredGeoJson = JSON.parse(answerText);
 
-          document.getElementById('distance-slider-area').innerHTML = "Length: " + ((answeredGeoJson.properties.objective)/1000).toFixed(2) + " km";
+          document.getElementById('solution-display').innerHTML = "Length: " + ((answeredGeoJson.properties.objective)/1000).toFixed(2) + " km";
 
           var myRouteCoordinates = new Array();
           var myRearrangedCoords = new Array();
