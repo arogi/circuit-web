@@ -42,7 +42,7 @@
 	height: 50px;
 	border-top-left-radius: 0px;
 	border-top-right-radius: 0px;
-	background: #3d4c59;
+	background: #1a2112;
 	color: white;
 	text-transform: uppercase;
 	text-align: center;
@@ -63,7 +63,7 @@
 	color: white;
 	line-height: 50px; /* meant to create vertical alignment */
 	clear:both;
-	background-color:rgba(86, 107, 132, 0.9);
+	background-color:rgba(89, 116, 62, 0.9);
 
 }
 

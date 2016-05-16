@@ -4,11 +4,11 @@
   <title>Arogi Traveling Salesman</title>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
   <link rel="stylesheet" href="leaflet/leaflet.css" />
-  <link rel="stylesheet" href="arogi_dark.css" />
+  <link rel="stylesheet" href="arogi_earth.css" />
   <script src="leaflet/leaflet.js"></script>
   <script src="https://mapzen.com/tangram/0.6/tangram.min.js"></script>
 
-  
+
   <style>
 
   body {
@@ -45,7 +45,7 @@
   <script>
 
   // this loads the geoJSON, with the code everything is held up until the file loads
-  $.when($.getJSON("data/mydata.geojson")).done(function(answeredGeoJson) {
+  $.when($.getJSON("data/nps_parks.geojson")).done(function(answeredGeoJson) {
 
     //answeredGeoJson = defaultMarkers;
 
@@ -54,6 +54,7 @@
       polyline1 = new Array();
       polyline2 = new Array();
       polyline3 = new Array();
+      polyline4 = new Array();
       simpleCount = 0;
       var pointMarkers;
 
@@ -82,9 +83,10 @@
             myRouteDest = myFriendlyGeoJsonObject.features[dest].geometry.coordinates;
             myRearrangedCoords[0] = [myRouteOrigin[1],myRouteOrigin[0]];
             myRearrangedCoords[1] = [myRouteDest[1],myRouteDest[0]];
-            polyline1[someSortOfCounter] = L.polyline(myRearrangedCoords, {color: '#ccffff', weight:16, opacity:0.12});
-            polyline2[someSortOfCounter] = L.polyline(myRearrangedCoords, {color: '#006699', weight:6, opacity:1});
-            polyline3[someSortOfCounter] = L.polyline(myRearrangedCoords, {color: '#66ccff', weight:4, opacity:1});
+            polyline1[someSortOfCounter] = L.polyline(myRearrangedCoords, {color: '#ffffff', weight:19, opacity:0.5});
+            polyline2[someSortOfCounter] = L.polyline(myRearrangedCoords, {color: '#2b542b', weight:9, opacity:1});
+            polyline3[someSortOfCounter] = L.polyline(myRearrangedCoords, {color: '#78ba78', weight:8, opacity:1});
+            polyline4[someSortOfCounter] = L.polyline(myRearrangedCoords, {color: '#e8fde8', weight:6, opacity:1});
             someSortOfCounter++;
           });
 
@@ -100,6 +102,11 @@
             polyline3[index].addTo(map);
           }
 
+          for (index = 0; index < polyline4.length; ++index) {
+            polyline4[index].addTo(map);
+          }
+
+
           // if you ever want to use a marker icon instead, here you go...
           ffffffIcon = L.icon({
             iconUrl: '/images/ffffff.png',
@@ -110,7 +117,8 @@
           pointMarkers = L.geoJson(answeredGeoJson, {
             pointToLayer: function (feature, latlng) {
 
-              return L.circleMarker(latlng, {radius: 5, fillColor: "#ffffff", color:"#006699",weight:2,opacity:1,fillOpacity:0.65});
+              return L.circleMarker(latlng, {radius: 2.5, fillColor: "#2b542b", color:"#ffffff",weight:0,opacity:1,fillOpacity:1});
+              //return L.circleMarker(latlng, {radius: 4, fillColor: "#e8fde8", color:"#2b542b",weight:2,opacity:1,fillOpacity:1});
               // return L.marker(latlng, {icon: ffffffIcon}).bindPopup(String(latlng));
             }
           });
@@ -130,7 +138,7 @@
     // add basemap tiles from Mapzen's Tangram
     var map = L.map('map', {zoomControl: false});
     var backgroundLayer = Tangram.leafletLayer({
-      scene: 'grayprint.yaml',
+      scene: 'style.yaml',
       attribution: '<a href="arogi.com">Arogi</a> | &copy; <a href="http://osm.org">OpenSteetMap</a> | <a href="https://mapzen.com/tangram" target="_blank">Mapzen</a>'
     });
     backgroundLayer.addTo(map);
