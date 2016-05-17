@@ -1,5 +1,3 @@
-**status: 15 May 2016 -- @glennon and @LEDominator are prepping the Docker image. This line will be removed when it is operational.**  
-
 <b>Running your own Arogi Circuit Router (Traveling Salesman Problem)</b>  
 <hr />
 
