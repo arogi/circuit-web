@@ -3,254 +3,391 @@
   "features": [
     {
       "type": "Feature",
-      "properties": {},
+      "id": 32,
+      "properties": {
+        "Code": "POCH",
+        "Name": "Port Chicago Naval Magazine National Memorial"
+      },
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -122.40966796874999,
-          37.77071473849609
+          -122.02968997340061,
+          38.05752521711916
         ]
       }
     },
     {
       "type": "Feature",
-      "properties": {},
+      "id": 66,
+      "properties": {
+        "Code": "EUON",
+        "Name": "Eugene O'Neill National Historic Site"
+      },
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -119.99267578124999,
-          34.470335121217495
+          -122.02666421306343,
+          37.82592473657651
         ]
       }
     },
     {
       "type": "Feature",
-      "properties": {},
+      "id": 69,
+      "properties": {
+        "Code": "FOPO",
+        "Name": "Fort Point National Historic Site"
+      },
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -118.30078125,
-          33.88865750124075
+          -122.47371724398397,
+          37.8084002052445
         ]
       }
     },
     {
       "type": "Feature",
-      "properties": {},
+      "id": 72,
+      "properties": {
+        "Code": "RORI",
+        "Name": "Rosie the Riveter WWII Home Front National Historical Park"
+      },
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -119.66171264648436,
-          37.721306044876805
+          -122.36653505635901,
+          37.90866832535756
         ]
       }
     },
     {
       "type": "Feature",
-      "properties": {},
+      "id": 84,
+      "properties": {
+        "Code": "MUWO",
+        "Name": "Muir Woods National Monument"
+      },
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -121.53076171875,
-          40.440676262682395
+          -122.59219031030287,
+          37.899655100144244
         ]
       }
     },
     {
       "type": "Feature",
-      "properties": {},
+      "id": 88,
+      "properties": {
+        "Code": "SAFR",
+        "Name": "San Francisco Maritime National Historical Park"
+      },
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -121.805419921875,
-          36.25424062786422
+          -122.42364633393989,
+          37.80857191826663
         ]
       }
     },
     {
       "type": "Feature",
-      "properties": {},
+      "id": 111,
+      "properties": {
+        "Code": "CABR",
+        "Name": "Cabrillo National Monument"
+      },
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -117.22412109375,
-          32.71104439078295
+          -117.24147362061612,
+          32.67243113084509
         ]
       }
     },
     {
       "type": "Feature",
-      "properties": {},
+      "id": 158,
+      "properties": {
+        "Code": "DEPO",
+        "Name": "Devils Postpile National Monument"
+      },
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -116.16325378417969,
-          34.01567274170195
+          -119.08739032309173,
+          37.61525639858674
         ]
       }
     },
     {
       "type": "Feature",
-      "properties": {},
+      "id": 172,
+      "properties": {
+        "Code": "JOMU",
+        "Name": "John Muir National Historic Site"
+      },
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -115.17302513122557,
-          36.10085077285374
+          -122.13599464018154,
+          37.98259638345624
         ]
       }
     },
     {
       "type": "Feature",
-      "properties": {},
+      "id": 184,
+      "properties": {
+        "Code": "PRSF",
+        "Name": "Presidio of San Francisco"
+      },
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -119.1412353515625,
-          37.99453932469732
+          -122.46713073964011,
+          37.79654317448044
         ]
       }
     },
     {
       "type": "Feature",
-      "properties": {},
+      "id": 200,
+      "properties": {
+        "Code": "MANZ",
+        "Name": "Manzanar National Historic Site"
+      },
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -123.79394531249999,
-          39.29817374735305
+          -118.15471770065676,
+          36.72559195291623
         ]
       }
     },
     {
       "type": "Feature",
-      "properties": {},
+      "id": 267,
+      "properties": {
+        "Code": "LABE",
+        "Name": "Lava Beds National Monument"
+      },
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -121.55685424804688,
-          41.765422180753326
+          -121.5213368153262,
+          41.761497369483116
         ]
       }
     },
     {
       "type": "Feature",
-      "properties": {},
+      "id": 275,
+      "properties": {
+        "Code": "WHIS",
+        "Name": "Whiskeytown National Recreation Area"
+      },
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -122.52965927124023,
-          37.82185324692258
+          -122.60226571677792,
+          40.61359940526877
         ]
       }
     },
     {
       "type": "Feature",
-      "properties": {},
+      "id": 277,
+      "properties": {
+        "Code": "PINN",
+        "Name": "Pinnacles National Monument"
+      },
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -117.9175016283989,
-          33.81098194497961
+          -121.18110088326603,
+          36.4901310064952
         ]
       }
     },
     {
       "type": "Feature",
-      "properties": {},
+      "id": 332,
+      "properties": {
+        "Code": "LAVO",
+        "Name": "Lassen Volcanic National Park"
+      },
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -112.97344207763672,
-          37.21816302292856
+          -121.41212664904383,
+          40.48622026090819
         ]
       }
     },
     {
       "type": "Feature",
-      "properties": {},
+      "id": 341,
+      "properties": {
+        "Code": "DEVA",
+        "Name": "Death Valley National Park"
+      },
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -112.17470169067383,
-          37.61776679867661
+          -117.13511154435771,
+          36.48741910067162
         ]
       }
     },
     {
       "type": "Feature",
-      "properties": {},
+      "id": 342,
+      "properties": {
+        "Code": "REDW",
+        "Name": "Redwood National and State Parks"
+      },
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -111.412353515625,
-          36.901587303978474
+          -124.00482968014182,
+          41.27702956462916
         ]
       }
     },
     {
       "type": "Feature",
-      "properties": {},
+      "id": 343,
+      "properties": {
+        "Code": "GOGA",
+        "Name": "Golden Gate National Recreation Area"
+      },
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -109.53643798828125,
-          38.73158984401968
+          -122.55146603311029,
+          37.862648681885084
         ]
       }
     },
     {
       "type": "Feature",
-      "properties": {},
+      "id": 344,
+      "properties": {
+        "Code": "YOSE",
+        "Name": "Yosemite National Park"
+      },
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -110.70854187011719,
-          38.5680322272849
+          -119.55600729459782,
+          37.84893656911814
         ]
       }
     },
     {
       "type": "Feature",
-      "properties": {},
+      "id": 345,
+      "properties": {
+        "Code": "SAMO",
+        "Name": "Santa Monica Mountains National Recreation Area"
+      },
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -114.21914577484131,
-          39.00584545569232
+          -118.910464470296,
+          34.10214700522728
         ]
       }
     },
     {
       "type": "Feature",
-      "properties": {},
+      "id": 346,
+      "properties": {
+        "Code": "PORE",
+        "Name": "Point Reyes National Seashore"
+      },
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -119.21127319335936,
-          40.76182096906601
+          -122.86492337132071,
+          38.05557132213282
         ]
       }
     },
     {
       "type": "Feature",
-      "properties": {},
+      "id": 347,
+      "properties": {
+        "Code": "KICA",
+        "Name": "Kings Canyon National Park"
+      },
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -111.70557260513306,
-          40.44381173426701
+          -118.59384064032848,
+          36.8749421087923
         ]
       }
     },
     {
       "type": "Feature",
-      "properties": {},
+      "id": 348,
+      "properties": {
+        "Code": "JOTR",
+        "Name": "Joshua Tree National Park"
+      },
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -116.5899181365967,
-          40.561742765249285
+          -116.15907084356105,
+          33.98096522850808
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": 349,
+      "properties": {
+        "Code": "MOJA",
+        "Name": "Mojave National Preserve"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -115.5570103212086,
+          35.10066435137423
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": 350,
+      "properties": {
+        "Code": "SEKI",
+        "Name": "Sequoia & Kings Canyon National Parks"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -118.5752011004094,
+          36.50785282265928
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": 351,
+      "properties": {
+        "Code": "CHIS",
+        "Name": "Channel Islands National Park"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -119.7251698451474,
+          34.00392978229205
         ]
       }
     }
