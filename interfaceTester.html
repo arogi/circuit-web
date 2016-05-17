@@ -1,0 +1,43 @@
+<!doctype html>
+<html>
+<head>
+  <title>Python Interface Tester</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+</head>
+
+<body>
+  <button id="mybutton" type="button" onclick="interfaceTest()" disabled>Run InterfaceTest</button>
+  <p />
+  <span id="solution"></span>
+
+  <script>
+
+  // add your datafile and interface to test here
+  dataFile = "data/cal_parks.geojson";
+  interfaceFile = "interface/tsp_interface.py";
+
+
+  $.when($.getJSON(dataFile)).done(function(defaultMarkers) {
+    $('#mybutton').removeAttr('disabled');
+    useThisInputData = JSON.stringify(defaultMarkers);
+    document.getElementById('solution').innerHTML = "Test input: " + useThisInputData;
+  });
+
+  function interfaceTest(){
+    $.ajax({
+      type: 'POST',
+      url: interfaceFile,  // this is the interface to test.
+      data: {useTheseMarkers:useThisInputData},
+      success: function(answerText) {
+        document.getElementById('solution').innerHTML = "Test output: " + answerText;
+      },
+      error: function(){
+        document.getElementById('solution').innerHTML = "Failure";
+      }
+    });
+  };
+
+  </script>
+
+</body>
+</html>
