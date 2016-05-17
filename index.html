@@ -70,9 +70,6 @@
         {
 
 
-          $("#myGreyButton").click(function(){
-            alert("download json data");
-          });
 
 
           answeredGeoJson = JSON.parse(answerText);
@@ -81,11 +78,15 @@
 
           var myRouteCoordinates = new Array();
           var myRearrangedCoords = new Array();
+          var coordinateSet = new Array();
+          var originAndDestination = new Array();
           myFriendlyGeoJsonObject = answeredGeoJson;
 
           someSortOfCounter = 0;
           $.each(myFriendlyGeoJsonObject.features, function(i, v) {
             myRouteOrigin = v.geometry.coordinates;
+
+            // get array of coordinates for writing GeoJSON polyline
             dest = v.properties.nextNode;
             myRouteDest = myFriendlyGeoJsonObject.features[dest].geometry.coordinates;
             myRearrangedCoords[0] = [myRouteOrigin[1],myRouteOrigin[0]];
@@ -94,8 +95,54 @@
             polyline2[someSortOfCounter] = L.polyline(myRearrangedCoords, {color: '#2b542b', weight:9, opacity:1});
             polyline3[someSortOfCounter] = L.polyline(myRearrangedCoords, {color: '#78ba78', weight:8, opacity:1});
             polyline4[someSortOfCounter] = L.polyline(myRearrangedCoords, {color: '#e8fde8', weight:6, opacity:1});
+
+            // stuff to track origin and destination for geojson's polyline
+            originAndDestination[someSortOfCounter] = dest; // key is origin and array[key] is destination
+
             someSortOfCounter++;
           });
+
+          // make a GeoJSON polyine of the route
+          var geoJsonString = "{\"type\": \"FeatureCollection\",\"features\": [{\"type\": \"Feature\",\"properties\": {\"objective\": " + answeredGeoJson.properties.objective + "},\"geometry\": {\"type\": \"LineString\",\"coordinates\": [";
+          pathValues = new Array();
+          pathValues[0] = originAndDestination[0];
+
+          counterOne = 0;
+          while (counterOne < someSortOfCounter) {
+            pathValues[counterOne+1] = originAndDestination[pathValues[counterOne]];
+            counterOne++;
+          }
+
+          counterTwo = 0;
+          while (counterTwo < someSortOfCounter) {
+            mylongitude = myFriendlyGeoJsonObject.features[pathValues[counterTwo]].geometry.coordinates[0];
+            mylatitude = myFriendlyGeoJsonObject.features[pathValues[counterTwo]].geometry.coordinates[1];
+            geoJsonString = geoJsonString.concat("["+ mylongitude + "," + mylatitude + "],");
+            counterTwo++;
+          }
+
+          mylongitude = myFriendlyGeoJsonObject.features[pathValues[0]].geometry.coordinates[0];
+          mylatitude = myFriendlyGeoJsonObject.features[pathValues[0]].geometry.coordinates[1];
+          geoJsonString = geoJsonString.concat("["+ mylongitude + "," + mylatitude + "]]}}]}");
+
+
+          // click the button to download the path as a GeoJSON
+          $("#myGreyButton").click(function(){
+            data = geoJsonString;
+            fileName = "solution.geojson";
+            var a = document.createElement("a");
+            document.body.appendChild(a);
+            a.style = "display: none";
+            var json = data,
+                blob = new Blob([json], {type: "text/json"}),
+                url = window.URL.createObjectURL(blob);
+            a.href = url;
+            a.download = fileName;
+            a.click();
+            window.URL.revokeObjectURL(url);
+          });
+
+
 
           for (index = 0; index < polyline1.length; ++index) {
             polyline1[index].addTo(map);
