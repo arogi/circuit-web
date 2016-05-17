@@ -4,12 +4,10 @@
   <title>Arogi Traveling Salesman</title>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
   <link rel="stylesheet" href="leaflet/leaflet.css" />
-  <link rel="stylesheet" href="arogi_dark.css" />
+  <link rel="stylesheet" href="arogi_earth.css" />
   <script src="leaflet/leaflet.js"></script>
   <script src="https://mapzen.com/tangram/0.6/tangram.min.js"></script>
-  <!-- // this loads a geojson of starting points.
-  // the variable is called defaultMarkers -->
-  <script src="data/mydata.js"></script>
+
 
   <style>
 
@@ -30,124 +28,189 @@
 </head>
 
 <body>
-
   <div id="map"></div>
+
+
+
 
   <div id="arogi-menu-main">
 
     <div id="arogi-top-zone">Arogi Circuit</div>
     <div id="arogi-menu-upper">
-      <div id="distance-slider-area">Length:</div>
-      <div id="download-button"></div>
+      <span id="solution-display">Length:</span><div id="myGreyButton">Download</div>
     </div>
 
   </div>
 
-
   <script>
 
-  //defaultMarkers is called from the data.js script.
-  answeredGeoJson = defaultMarkers;
+  // this loads the geoJSON, with the code everything is held up until the file loads
+  $.when($.getJSON("data/cal_parks.geojson")).done(function(answeredGeoJson) {
+
+    $(document).ready(function() {
 
 
-  $(document).ready(function() {
+      polyline1 = new Array();
+      polyline2 = new Array();
+      polyline3 = new Array();
+      polyline4 = new Array();
+      simpleCount = 0;
+      var pointMarkers;
 
-    polyline1 = new Array();
-    polyline2 = new Array();
-    polyline3 = new Array();
-    simpleCount = 0;
-    var pointMarkers;
+
+      var useTheseMarkers = JSON.stringify(answeredGeoJson);
+
+      $.ajax({
+        type: 'POST',
+        url: "interface/tsp_interface.py",  // deliver the data to this script... it will answer back with a solution
+        data: {useTheseMarkers:useTheseMarkers},
+        success: function(answerText)
+        {
 
 
-    var useTheseMarkers = JSON.stringify(answeredGeoJson);
 
-    $.ajax({
-      type: 'POST',
-      url: "interface/tsp_interface.py",  // deliver the data to this script... it will answer back with a solution
-      data: {useTheseMarkers:useTheseMarkers},
-      success: function(answerText)
-      {
 
-        answeredGeoJson = JSON.parse(answerText);
+          answeredGeoJson = JSON.parse(answerText);
 
-        document.getElementById('distance-slider-area').innerHTML = "Length: " + ((answeredGeoJson.properties.objective)/1000).toFixed(2) + " km";
+          document.getElementById('solution-display').innerHTML = "Length: " + ((answeredGeoJson.properties.objective)/1000).toFixed(2) + " km";
 
-        var myRouteCoordinates = new Array();
-        var myRearrangedCoords = new Array();
-        myFriendlyGeoJsonObject = answeredGeoJson;
+          var myRouteCoordinates = new Array();
+          var myRearrangedCoords = new Array();
+          var coordinateSet = new Array();
+          var originAndDestination = new Array();
+          myFriendlyGeoJsonObject = answeredGeoJson;
 
-        someSortOfCounter = 0;
-        $.each(myFriendlyGeoJsonObject.features, function(i, v) {
-          myRouteOrigin = v.geometry.coordinates;
-          dest = v.properties.nextNode;
-          myRouteDest = myFriendlyGeoJsonObject.features[dest].geometry.coordinates;
-          myRearrangedCoords[0] = [myRouteOrigin[1],myRouteOrigin[0]];
-          myRearrangedCoords[1] = [myRouteDest[1],myRouteDest[0]];
-          polyline1[someSortOfCounter] = L.polyline(myRearrangedCoords, {color: '#ccffff', weight:16, opacity:0.12});
-          polyline2[someSortOfCounter] = L.polyline(myRearrangedCoords, {color: '#006699', weight:6, opacity:1});
-          polyline3[someSortOfCounter] = L.polyline(myRearrangedCoords, {color: '#66ccff', weight:4, opacity:1});
-          someSortOfCounter++;
-        });
+          someSortOfCounter = 0;
+          $.each(myFriendlyGeoJsonObject.features, function(i, v) {
+            myRouteOrigin = v.geometry.coordinates;
 
-        for (index = 0; index < polyline1.length; ++index) {
+            // get array of coordinates for writing GeoJSON polyline
+            dest = v.properties.nextNode;
+            myRouteDest = myFriendlyGeoJsonObject.features[dest].geometry.coordinates;
+            myRearrangedCoords[0] = [myRouteOrigin[1],myRouteOrigin[0]];
+            myRearrangedCoords[1] = [myRouteDest[1],myRouteDest[0]];
+            polyline1[someSortOfCounter] = L.polyline(myRearrangedCoords, {color: '#ffffff', weight:19, opacity:0.5});
+            polyline2[someSortOfCounter] = L.polyline(myRearrangedCoords, {color: '#2b542b', weight:9, opacity:1});
+            polyline3[someSortOfCounter] = L.polyline(myRearrangedCoords, {color: '#78ba78', weight:8, opacity:1});
+            polyline4[someSortOfCounter] = L.polyline(myRearrangedCoords, {color: '#e8fde8', weight:6, opacity:1});
+
+            // stuff to track origin and destination for geojson's polyline
+            originAndDestination[someSortOfCounter] = dest; // key is origin and array[key] is destination
+
+            someSortOfCounter++;
+          });
+
+          // make a GeoJSON polyine of the route
+          var geoJsonString = "{\"type\": \"FeatureCollection\",\"features\": [{\"type\": \"Feature\",\"properties\": {\"objective\": " + answeredGeoJson.properties.objective + "},\"geometry\": {\"type\": \"LineString\",\"coordinates\": [";
+          pathValues = new Array();
+          pathValues[0] = originAndDestination[0];
+
+          counterOne = 0;
+          while (counterOne < someSortOfCounter) {
+            pathValues[counterOne+1] = originAndDestination[pathValues[counterOne]];
+            counterOne++;
+          }
+
+          counterTwo = 0;
+          while (counterTwo < someSortOfCounter) {
+            mylongitude = myFriendlyGeoJsonObject.features[pathValues[counterTwo]].geometry.coordinates[0];
+            mylatitude = myFriendlyGeoJsonObject.features[pathValues[counterTwo]].geometry.coordinates[1];
+            geoJsonString = geoJsonString.concat("["+ mylongitude + "," + mylatitude + "],");
+            counterTwo++;
+          }
+
+          mylongitude = myFriendlyGeoJsonObject.features[pathValues[0]].geometry.coordinates[0];
+          mylatitude = myFriendlyGeoJsonObject.features[pathValues[0]].geometry.coordinates[1];
+          geoJsonString = geoJsonString.concat("["+ mylongitude + "," + mylatitude + "]]}}]}");
+
+
+          // click the button to download the path as a GeoJSON
+          $("#myGreyButton").click(function(){
+            data = geoJsonString;
+            fileName = "solution.geojson";
+            var a = document.createElement("a");
+            document.body.appendChild(a);
+            a.style = "display: none";
+            var json = data,
+                blob = new Blob([json], {type: "text/json"}),
+                url = window.URL.createObjectURL(blob);
+            a.href = url;
+            a.download = fileName;
+            a.click();
+            window.URL.revokeObjectURL(url);
+          });
+
+
+
+          for (index = 0; index < polyline1.length; ++index) {
             polyline1[index].addTo(map);
-        }
+          }
 
-        for (index = 0; index < polyline2.length; ++index) {
+          for (index = 0; index < polyline2.length; ++index) {
             polyline2[index].addTo(map);
-        }
+          }
 
-        for (index = 0; index < polyline3.length; ++index) {
+          for (index = 0; index < polyline3.length; ++index) {
             polyline3[index].addTo(map);
-        }
+          }
 
-        // if you ever want to use a marker icon instead, here you go...
-        ffffffIcon = L.icon({
+          for (index = 0; index < polyline4.length; ++index) {
+            polyline4[index].addTo(map);
+          }
+
+
+          // if you ever want to use a marker icon instead, here you go...
+          ffffffIcon = L.icon({
             iconUrl: '/images/ffffff.png',
             iconSize:     [6, 6], // size of the icon
             iconAnchor:   [3, 3], // point of the icon which will correspond to marker's location
-        });
+          });
 
-        pointMarkers = L.geoJson(answeredGeoJson, {
-          pointToLayer: function (feature, latlng) {
+          pointMarkers = L.geoJson(answeredGeoJson, {
+            pointToLayer: function (feature, latlng) {
+              if (feature.properties.Name != undefined) {
+                return L.circleMarker(latlng, {radius: 2.5, fillColor: "#2b542b", color:"#ffffff",weight:0,opacity:1,fillOpacity:1}).bindPopup(feature.properties.Name);
+              } else {
+                return L.circleMarker(latlng, {radius: 2.5, fillColor: "#2b542b", color:"#ffffff",weight:0,opacity:1,fillOpacity:1});
+              }
+              //return L.circleMarker(latlng, {radius: 4, fillColor: "#e8fde8", color:"#2b542b",weight:2,opacity:1,fillOpacity:1});
+              // return L.marker(latlng, {icon: ffffffIcon}).bindPopup(String(latlng));
+            }
+          });
+          pointMarkers.addTo(map);
 
-            return L.circleMarker(latlng, {radius: 5, fillColor: "#ffffff", color:"#006699",weight:2,opacity:1,fillOpacity:0.65});
-            // return L.marker(latlng, {icon: ffffffIcon}).bindPopup(String(latlng));
-          }
-        });
 
-        pointMarkers.addTo(map);
+        },
+        error: function()
+        {
+          //// fail --- todo: add a nice fallback
+        }
+      });
 
+    });
 
-      },
-      error: function()
-      {
-        //// fail --- todo: add a nice fallback
+    // add basemap tiles from Mapzen's Tangram
+    var map = L.map('map', {zoomControl: false});
+    var backgroundLayer = Tangram.leafletLayer({
+      scene: 'style.yaml',
+      attribution: '<a href="arogi.com">Arogi</a> | &copy; <a href="http://osm.org">OpenSteetMap</a> | <a href="https://mapzen.com/tangram" target="_blank">Mapzen</a>'
+    });
+    backgroundLayer.addTo(map);
+
+    L.control.scale().setPosition('bottomright').addTo(map);
+    new L.Control.Zoom({ position: 'bottomright' }).addTo(map);
+
+    // not shown, but read just to get appropriate map bounds... before the ajax call
+    pointMarkers2 = L.geoJson(answeredGeoJson, {
+      pointToLayer: function (feature, latlng) {
+        return L.circleMarker(latlng);
       }
     });
 
-  });
+    // pointMarkers2.addTo(map);
+    map.fitBounds(pointMarkers2, {padding:[140,140]});
 
-  // add basemap tiles from Mapzen's Tangram
-  var map = L.map('map', {zoomControl: false});
-  var backgroundLayer = Tangram.leafletLayer({
-    scene: 'grayprint.yaml',
-    attribution: '<a href="arogi.com">Arogi</a> | &copy; <a href="http://osm.org">OpenSteetMap</a> | <a href="https://mapzen.com/tangram" target="_blank">Mapzen</a>'
-  });
-  backgroundLayer.addTo(map);
-
-  L.control.scale().setPosition('bottomright').addTo(map);
-  new L.Control.Zoom({ position: 'bottomright' }).addTo(map);
-
-  // not shown, but read just to get appropriate map bounds... before the ajax call
-  pointMarkers2 = L.geoJson(answeredGeoJson, {
-    pointToLayer: function (feature, latlng) {
-      return L.circleMarker(latlng);
-    }
-  });
-
-  // pointMarkers2.addTo(map);
-  map.fitBounds(pointMarkers2, {padding:[140,140]});
+  }); // end the when-done
 
   </script>
 
