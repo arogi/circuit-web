@@ -9,4 +9,5 @@
 
 Want to use your own data? [Easy!](https://github.com/arogi/circuit-web/blob/master/README.md)  
 
+Screenshot:  
 ![Screenshot](https://raw.githubusercontent.com/arogi/circuit-web/master/images/quickstart-screenshot.png)
