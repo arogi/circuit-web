@@ -27,7 +27,6 @@ import cgi
 import json
 import GISOps
 import numpy as np
-import requests
 from scipy.spatial.distance import cdist
 from ortools.constraint_solver import pywrapcp
 from ortools.constraint_solver import routing_enums_pb2
@@ -48,67 +47,21 @@ def RunTSP():
     #TSP using Google OR-Tools Constraint Programming model example
     PreComputeDistances() #compute the distances between points
     objective = SolveModel()
+
     return objective
+
 
 def PreComputeDistances():
     #declare a couple variables
     global d
-    #global xyPointArray
+    global xyPointArray
     # Get the Distance Coordinates in CONUS EqD Projection
-    #xyPointArray = GISOps.GetCONUSeqDprojCoords(js)
-    #d = cdist(xyPointArray, xyPointArray,'euclidean')
-
-    # read in the coordinates and get their distances to each other
-    numFeatures = len(js['features'])
-    xyPointArray = [[None for k in range(2)] for j in range(numFeatures)]
-    d = [[None for i in range(numFeatures)] for j in range(numFeatures)]
-    i = 0;
-    for line in js['features']:
-        Lon = line['geometry']['coordinates'][0]
-        Lat = line['geometry']['coordinates'][1]
-
-        xyPointArray[i][0] = Lon
-        xyPointArray[i][1] = Lat
-        i += 1
-
-    #print js
-
-    for i in range(numFeatures):
-        longi = xyPointArray[i][0]
-        lati = xyPointArray[i][1]
-        for j in range(numFeatures):
-            longj = xyPointArray[j][0]
-            latj = xyPointArray[j][1]
-            text = postDataJSON(lati,longi,latj,longj)
-            #print pyCurl(json.dumps(text))
-            # Get the distance as a function of the network using Valhalla
-            d[i][j] = pyCurl(json.dumps(text))
-    #print d
-
-def pyCurl(input): #Define function to send request
-    global r #define the request object as r
-    global path_length
-    #Put your valhalla url here
-    url = 'http://192.168.99.100:8002/route'
-    #Define your headers here: in this case we are using json data
-    headers = {'content-type': 'application/json'}
-    #define r as equal to the POST request
-    #print input
-    r = requests.post(url, data = input, headers = headers)
-    #print r.text
-    #capture server response
-    response = r.json()
-    path_length = response['trip']['legs'][0]['summary']['length']
-    coords = response['trip']['legs'][0]['shape']
-    #print path_length
-    return path_length
-
-def postDataJSON(lati,longi,latj,longj):
-    text = {"locations": [{"lat": lati,"lon": longi}, {"lat": latj,"lon": longj}],"costing": "auto","directions_options": {"units": "kilometers"}}
-    return text
+    xyPointArray = GISOps.GetCONUSeqDprojCoords(js)
+    d = cdist(xyPointArray, xyPointArray,'euclidean')
+    return 1
 
 def Distance(i,j):
-    return d[i][j]
+    return d[i,j]
 
 def SolveModel():
   """Solve the problem and print the solution."""
@@ -156,7 +109,7 @@ def SolveModel():
 def read_problem(file, readType):
   global numFeatures
   global js
-
+    
   try:
       if readType == 1:
           #print 'Reading JSON String Object'
@@ -168,7 +121,7 @@ def read_problem(file, readType):
   except IOError:
       print 'Error reading file'
       raise
-
+  
   # count the number of point features to connect
   numFeatures = len(js['features'])
   return 1
@@ -176,11 +129,10 @@ def read_problem(file, readType):
 
 
 ### This function will return a geojson formatted string to send back to the web
-### Since it is based on the p-Median/MCLP data files we can use some of those
-### atributes to send back. In this case facilityLocated represents the 'from
-### node' and assignedTo represents the 'to node' for the TSP.
+### In this case thisNode represents the 'from node' and nextNode represents the 'to node'
+### for the TSP.
 def generateGEOJSON(objective):
-    #print js
+
     for i in range(numFeatures):
         node = routeCoord[i][0]
         nextNode = routeCoord[i][1]
@@ -190,13 +142,13 @@ def generateGEOJSON(objective):
     # if properties does not exist in the geojson, create it
     if 'properties' not in js:
         js['properties'] = {}
-
     # write the objective value into the geojson
     js['properties']['objective'] = objective
-
     ### As of this moment js is the output file... ready to be delivered back to
     ### as the solution
     return 1
+    
+    
 ###########################################################
 ##################### The main controller code starts here.
 ###########################################################
