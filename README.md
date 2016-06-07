@@ -1,4 +1,4 @@
-# circui-web
+# circuit-web
 A traveling salesman problem showcase from your pals at Arogi.
 
 The repo has simple implementations of the Traveling Salesman Problem (TSP). With numerous (all open source) dependencies, the easiest way to get this up and running on your own machine is to use the included [Docker instructions](docker-instructions.md). 
