@@ -1,5 +1,3 @@
-#!/usr/bin/python
-
 # Copyright 2015-2016 Arogi Inc
 # Copyright 2010-2014 Google
 #
