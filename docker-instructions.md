@@ -31,7 +31,7 @@
 
  2. Type: `docker run -it -d -p 8002:8002 arogi/arogi-valhalla`  
 
- 3. Make sure the circuit-web container is still running. If not, do instructions in the "Getting Started" section above.  
+ 3. Type `docker ps -a` and check if circuit-web container is still running. If not, do "Getting Started" section above.  
 
  4. Open a web browser and enter the following into the address bar:  
      On OS X and Windows, enter `192.168.99.100/network.html`. On Linux, enter `localhost/network.html` 
