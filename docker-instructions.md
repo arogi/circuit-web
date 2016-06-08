@@ -23,7 +23,7 @@
      On OS X and Windows, enter `192.168.99.100`. On Linux, enter `localhost`  
 
 
-*Running TSP on a Network*
+*Running TSP on a Road Network*
 
  1. Make a local copy of Valhalla. Type:  
     `git clone https://github.com/arogi/valhalla-docker`
