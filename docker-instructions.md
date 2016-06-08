@@ -25,8 +25,7 @@
 
 *Running TSP on a Road Network*
 
- 1. Type: `docker pull arogi/arogi-valhalla`  
-    to grab the latest Arogi-Valhalla Docker image.
+ 1. Type: `docker pull arogi/arogi-valhalla` to grab the latest Arogi-Valhalla Docker image.
     *Note: This downloads statewide road networks for CA, NV, OR, and AZ. Thus it may take a while, depending on your network speed.*
 
  2. Type: `docker run -it -d -p 8002:8002 arogi/arogi-valhalla`  
