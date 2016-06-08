@@ -23,6 +23,22 @@
      On OS X and Windows, enter `192.168.99.100`. On Linux, enter `localhost`  
 
 
+*Running TSP on a Network*
+
+ 1. Make a local copy of Valhalla. Type:  
+    `git clone https://github.com/arogi/valhalla-docker`
+
+ 2. Navigate to the valhalla-docker folder. Now, execute the build shell script to compile Valhalla. Type:  
+    `./build.sh`  
+    *Note: This downloads statewide road networks for CA, NV, OR, and AZ. Thus it may take a while, depending on your network speed.*
+
+ 3. Execute the Valhalla server. Type:
+    `./run-valhalla.sh`
+
+ 4. Open a web browser and enter the following into the address bar:  
+     On OS X and Windows, enter `192.168.99.100/network.html`. On Linux, enter `localhost/network.html` 
+
+
 *Shutting Down*  
 
  1. Return to the Docker terminal.
