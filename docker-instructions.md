@@ -41,7 +41,7 @@
  1. Return to the Docker terminal.
 
  2. Type: `docker ps -a`  
-    to see a list of all local docker containers. Note the name it gives as a label. It often is something like: `silly_tonsils`
+    to see a list of all local docker containers. Note the name it gives as a label. It often is something like: `jolly_ptolemy`
 
  3. To stop Docker, type: `docker stop container_name`
 
