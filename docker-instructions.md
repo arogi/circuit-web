@@ -14,7 +14,7 @@
 *Getting Started*
 
  1. Type: `docker pull arogi/circuit-web`  
-    to grab the latest Arogi Docker image.
+    to grab the latest Circuit-Web Docker image.
 
  2. Type: `docker run -it -p 80:80 -d -v ~/repos/circuit-web/:/var/www/html arogi/circuit-web`  
     In that statement, replace `~/repos/circuit-web/` with the pathname to your local repository.
@@ -25,15 +25,13 @@
 
 *Running TSP on a Road Network*
 
- 1. Make a local copy of Valhalla. Type:  
-    `git clone https://github.com/arogi/valhalla-docker`
-
- 2. Navigate to the valhalla-docker folder. Now, execute the build shell script to compile Valhalla. Type:  
-    `./build.sh`  
+ 1. Type: `docker pull arogi/arogi-valhalla`  
+    to grab the latest Arogi-Valhalla Docker image.
     *Note: This downloads statewide road networks for CA, NV, OR, and AZ. Thus it may take a while, depending on your network speed.*
 
- 3. Execute the Valhalla server. Type:
-    `./run-valhalla.sh`
+ 2. Type: `docker run -it -d -p 8002:8002 arogi/arogi-valhalla`  
+
+ 3. Make sure the circuit-web container is still running. If not, do instructions in the "Getting Started" section above.  
 
  4. Open a web browser and enter the following into the address bar:  
      On OS X and Windows, enter `192.168.99.100/network.html`. On Linux, enter `localhost/network.html` 
