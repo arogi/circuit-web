@@ -28,6 +28,7 @@ import json
 import GISOps
 import numpy as np
 import requests
+import platform
 from scipy.spatial.distance import cdist
 from ortools.constraint_solver import pywrapcp
 from ortools.constraint_solver import routing_enums_pb2
@@ -89,7 +90,10 @@ def pyCurl(input): #Define function to send request
     global r #define the request object as r
     global path_length
     #Put your valhalla url here
-    url = 'http://192.168.99.100:8002/route'
+    if platform.system() == 'Darwin' or platform.system() == 'Windows':
+        url = 'http://192.168.99.100:8002/route'
+    else:
+        url = 'http://localhost:8002/route'
     #Define your headers here: in this case we are using json data
     headers = {'content-type': 'application/json'}
     #define r as equal to the POST request
