@@ -89,11 +89,17 @@ def PreComputeDistances():
 def pyCurl(input): #Define function to send request
     global r #define the request object as r
     global path_length
+
     #Put your valhalla url here
-    if platform.system() == 'Darwin' or platform.system() == 'Windows':
-        url = 'http://192.168.99.100:8002/route'
-    else:
-        url = 'http://localhost:8002/route'
+    url = 'http://192.168.99.100:8002/route'
+    ## THE ABOVE IS A KLUDGE, WE SHOULD BE LINKING CONTAINERS INSTEAD.
+    ## THIS SOLUTION WILL ONLY WORK ON MAC & WINDOWS, NOT LINUX
+    ## THE BELOW CODE DOES NOT WORK IN DOCKER
+    # if platform.system() == 'Darwin' or platform.system() == 'Windows':
+    #     url = 'http://192.168.99.100:8002/route'
+    # else:
+    #     url = 'http://localhost:8002/route'
+
     #Define your headers here: in this case we are using json data
     headers = {'content-type': 'application/json'}
     #define r as equal to the POST request
