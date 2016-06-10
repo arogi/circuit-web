@@ -23,7 +23,7 @@
      On OS X and Windows, enter `192.168.99.100`. On Linux, enter `localhost`  
 
 
-*Running TSP on a Road Network (OS X and Windows only, will add Linux support soon)*  
+*Running TSP on a Road Network — (OS X and Windows only, will add Linux support soon)*  
 
  1. Type: `docker pull arogi/arogi-valhalla` to grab the latest Arogi-Valhalla Docker image.
     *Note: This downloads statewide road networks for CA, NV, OR, and AZ. Thus it may take a while, depending on your network speed.*
