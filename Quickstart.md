@@ -1,11 +1,19 @@
 <b>Arogi Circuit Router Quickstart</b>
 <hr />
+*Prerequisites*  
 
-- With Docker installed, type: `docker pull arogi/circuit-web` into your Terminal.
+ 1. Install Docker. Their webpage has [instructions](https://docs.docker.com/engine/installation/).
 
-- Type: `docker run -it -p 80:80 arogi/circuit-web`
+ 2. In Windows and OS X, launch the Docker Quickstart Terminal. Linux uses the standard Terminal.
 
-- Type `localhost` in your browser address bar.
+*Getting Started*
+
+ 1. Type: `docker pull arogi/circuit-web` into your Terminal.
+
+ 2. Type: `docker run -it -p 80:80 arogi/circuit-web`
+
+ 3. Open a web browser and enter the following into the address bar:  
+     On OS X and Windows, enter `192.168.99.100`. On Linux, enter `localhost`  
 
 Want to use your own data? [Easy!](https://github.com/arogi/circuit-web/blob/master/README.md)  
 
