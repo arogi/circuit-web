@@ -62,7 +62,7 @@
 
       $.ajax({
         type: 'POST',
-        url: "interface/tsp_interface_euclidean.py",  // deliver the data to this script... it will answer back with a solution
+        url: "interface/tsp_interface_valhalla.py",  // deliver the data to this script... it will answer back with a solution
         data: {useTheseMarkers:useTheseMarkers},
         success: function(answerText)
         {

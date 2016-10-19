@@ -109,7 +109,7 @@ def SolveModel():
 def read_problem(file, readType):
   global numFeatures
   global js
-    
+
   try:
       if readType == 1:
           #print 'Reading JSON String Object'
@@ -121,7 +121,7 @@ def read_problem(file, readType):
   except IOError:
       print 'Error reading file'
       raise
-  
+
   # count the number of point features to connect
   numFeatures = len(js['features'])
   return 1
@@ -147,8 +147,8 @@ def generateGEOJSON(objective):
     ### As of this moment js is the output file... ready to be delivered back to
     ### as the solution
     return 1
-    
-    
+
+
 ###########################################################
 ##################### The main controller code starts here.
 ###########################################################
